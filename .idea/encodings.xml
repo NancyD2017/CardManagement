@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/configuration" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/controller" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/entity" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/mapper" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/model" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/repository" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/service" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/TaskManagement/src/main/resources/application.yml" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/TaskManagement/src/main/resources/docker-compose.yml" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/TaskManagement/src/main/resources/docker-compose.yml" charset="windows-1251" />
+  </component>
+</project>
