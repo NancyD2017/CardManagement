@@ -1,6 +1,5 @@
 package com.example.TaskManagement.security;
 
-import com.example.TaskManagement.exception.RefreshTokenException;
 import com.example.TaskManagement.model.entity.RefreshToken;
 import com.example.TaskManagement.model.entity.User;
 import com.example.TaskManagement.model.request.LoginRequest;
@@ -35,7 +34,7 @@ public class SecurityService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public AuthResponse authenticateUser(LoginRequest loginRequest){
+    public AuthResponse authenticateUser(LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 loginRequest.getEmail(),
                 loginRequest.getPassword()
@@ -57,7 +56,8 @@ public class SecurityService {
                 .roles(roles)
                 .build();
     }
-    public User register(UpsertUserRequest createUserRequest){
+
+    public User register(UpsertUserRequest createUserRequest) {
         var user = User.builder()
                 .username(createUserRequest.getUsername())
                 .password(passwordEncoder.encode(createUserRequest.getPassword()))
@@ -67,24 +67,25 @@ public class SecurityService {
 
         return userRepository.save(user);
     }
-//TODO remove exception
-    public RefreshTokenResponse refreshToken(RefreshTokenRequest request){
+
+    public RefreshTokenResponse refreshToken(RefreshTokenRequest request) {
         String requestRefreshToken = request.getRefreshToken();
 
         return refreshTokenService.findByRefreshToken(requestRefreshToken)
                 .map(refreshTokenService::checkRefreshToken)
                 .map(RefreshToken::getUserId)
-                .map(userId -> {
-                    User tokenOwner = userRepository.findById(userId).orElseThrow(() ->
-                            new RefreshTokenException("Exception trying to get token for userId : " + userId));
+                .flatMap(userRepository::findById)
+                .map(tokenOwner -> {
                     String token = jwtUtils.generateTokenFromUsername(tokenOwner.getUsername());
+                    String refreshToken = refreshTokenService.createRefreshToken(tokenOwner.getId()).getToken();
+                    return new RefreshTokenResponse(token, refreshToken);
+                }).orElse(null);
 
-                    return new RefreshTokenResponse(token, refreshTokenService.createRefreshToken(userId).getToken());
-                }).orElseThrow(() -> new RefreshTokenException(requestRefreshToken, "Refresh token not found"));
     }
-    public void logout(){
+
+    public void logout() {
         var currentPrincipal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (currentPrincipal instanceof AppUserDetails userDetails){
+        if (currentPrincipal instanceof AppUserDetails userDetails) {
             Long userId = userDetails.getId();
 
             refreshTokenService.deleteByUserId(userId);

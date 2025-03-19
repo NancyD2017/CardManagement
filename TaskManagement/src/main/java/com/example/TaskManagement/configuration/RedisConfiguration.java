@@ -15,15 +15,15 @@ import java.time.Duration;
 import java.util.Collections;
 
 @Configuration
-@EnableRedisRepositories(keyspaceConfiguration =  RedisConfiguration.RefreshTokenKeyspaceConfiguration.class,
-enableKeyspaceEvents = RedisKeyValueAdapter.EnableKeyspaceEvents.ON_STARTUP)
+@EnableRedisRepositories(keyspaceConfiguration = RedisConfiguration.RefreshTokenKeyspaceConfiguration.class,
+        enableKeyspaceEvents = RedisKeyValueAdapter.EnableKeyspaceEvents.ON_STARTUP)
 public class RedisConfiguration {
 
     @Value("${app.jwt.refreshTokenExpiration}")
     private Duration refreshTokenExpiration;
 
     @Bean
-    public JedisConnectionFactory jedisConnectionFactory(RedisProperties redisProperties){
+    public JedisConnectionFactory jedisConnectionFactory(RedisProperties redisProperties) {
         RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
 
         configuration.setHostName(redisProperties.getHost());

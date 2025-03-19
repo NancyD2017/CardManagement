@@ -5,7 +5,6 @@ import com.example.TaskManagement.model.entity.Role;
 import com.example.TaskManagement.model.entity.Task;
 import com.example.TaskManagement.model.entity.User;
 import com.example.TaskManagement.model.request.UpsertPutRequest;
-import com.example.TaskManagement.model.request.UpsertTaskRequest;
 import com.example.TaskManagement.security.AppUserDetails;
 import com.example.TaskManagement.service.TaskService;
 import com.example.TaskManagement.service.UserService;
@@ -46,14 +45,16 @@ public class TaskAccessAspect {
             }
         }
     }
-    private boolean hasRole(String roleName){
+
+    private boolean hasRole(String roleName) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails userDetails){
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails userDetails) {
             return userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals(roleName));
         }
         return false;
     }
-    private Long findUserId(){
+
+    private Long findUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication != null &&

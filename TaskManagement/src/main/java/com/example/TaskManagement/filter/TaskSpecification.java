@@ -2,6 +2,7 @@ package com.example.TaskManagement.filter;
 
 import com.example.TaskManagement.model.entity.Task;
 import org.springframework.data.jpa.domain.Specification;
+
 public class TaskSpecification {
     public static Specification<Task> withFilter(TaskFilter filter) {
         return Specification.where(byAuthorId(filter.getAuthorId()))

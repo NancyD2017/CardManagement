@@ -17,13 +17,15 @@ public interface TaskMapper {
     @Mapping(target = "author", ignore = true)
     @Mapping(target = "assignee", ignore = true)
     Task requestToTask(UpsertTaskRequest request);
+
     @Mapping(target = "author", ignore = true)
     @Mapping(target = "assignee", ignore = true)
     @Mapping(source = "taskId", target = "id")
     Task requestToTask(Long taskId, UpsertTaskRequest request);
+
     TaskResponse taskToResponse(Task task);
 
-    default TaskListResponse taskListToTaskResponseList(List<Task> tasks){
+    default TaskListResponse taskListToTaskResponseList(List<Task> tasks) {
         TaskListResponse response = new TaskListResponse();
         response.setTasks(tasks.stream().map(this::taskToResponse).collect(Collectors.toList()));
 

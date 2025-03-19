@@ -50,8 +50,11 @@ public class UserController {
     }
 
     @PostMapping("refresh-token")
-    public ResponseEntity<RefreshTokenResponse> refreshToken(@RequestBody RefreshTokenRequest request){
-        return ResponseEntity.ok(securityService.refreshToken(request));
+    public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequest request){
+        RefreshTokenResponse rtr = securityService.refreshToken(request);
+        return rtr != null
+                ? ResponseEntity.ok().body(rtr)
+                : ResponseEntity.badRequest().body("Exception trying to refresh token");
     }
 
     @PutMapping("/{id}")

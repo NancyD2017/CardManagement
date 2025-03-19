@@ -6,6 +6,7 @@ import com.example.TaskManagement.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
@@ -20,11 +21,11 @@ public class RefreshTokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
 
-    public Optional<RefreshToken> findByRefreshToken(String token){
+    public Optional<RefreshToken> findByRefreshToken(String token) {
         return refreshTokenRepository.findByToken(token);
     }
 
-    public RefreshToken createRefreshToken(Long userId){
+    public RefreshToken createRefreshToken(Long userId) {
         var refreshToken = RefreshToken.builder()
                 .userId(userId)
                 .expiryDate(Instant.now().plusMillis(refreshTokenExpiration.toMillis()))
@@ -35,7 +36,7 @@ public class RefreshTokenService {
         return refreshToken;
     }
 
-    public RefreshToken checkRefreshToken(RefreshToken token){
+    public RefreshToken checkRefreshToken(RefreshToken token) {
         if (token.getExpiryDate().compareTo(Instant.now()) < 0) {
             refreshTokenRepository.delete(token);
             throw new RefreshTokenException("Refresh token has expired. Repeat signing action!" + token.getToken());
@@ -43,7 +44,7 @@ public class RefreshTokenService {
         return token;
     }
 
-    public void deleteByUserId(Long userId){
+    public void deleteByUserId(Long userId) {
         refreshTokenRepository.deleteByUserId(userId);
     }
 }

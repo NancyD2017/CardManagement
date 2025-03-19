@@ -12,13 +12,15 @@ import java.util.Collection;
 public class AppUserDetails implements UserDetails {
 
     private final User user;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return user.getRoles().stream()
                 .map(r -> new SimpleGrantedAuthority(r.name()))
                 .toList();
     }
-    public Long getId(){
+
+    public Long getId() {
         return user.getId();
     }
 

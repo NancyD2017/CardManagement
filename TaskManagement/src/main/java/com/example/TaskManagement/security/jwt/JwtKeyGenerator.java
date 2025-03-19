@@ -18,7 +18,7 @@ public class JwtKeyGenerator {
     }
 
 
-    public static String generateSecretKey(){
+    public static String generateSecretKey() {
         SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
         return java.util.Base64.getEncoder().encodeToString(secretKey.getEncoded());
     }

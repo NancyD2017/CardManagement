@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class RedisExpirationEvent {
     @EventListener
-    public void handleRedisKeyExpirationEvent(RedisKeyExpiredEvent<RefreshToken> event){
+    public void handleRedisKeyExpirationEvent(RedisKeyExpiredEvent<RefreshToken> event) {
         RefreshToken expiredRefreshToken = (RefreshToken) event.getValue();
 
         if (expiredRefreshToken == null) {

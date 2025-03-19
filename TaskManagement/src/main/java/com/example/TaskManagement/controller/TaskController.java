@@ -36,6 +36,7 @@ public class TaskController {
                 ? ResponseEntity.ok(taskMapper.taskToResponse(taskService.findById(id)))
                 : ResponseEntity.notFound().build();
     }
+
     @GetMapping("/filter")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<?> filterBy(@Valid @RequestBody TaskFilterRequest filter) {
@@ -73,6 +74,7 @@ public class TaskController {
         Task t = taskService.addComment(id, comment.getRequest());
         return ResponseEntity.ok(taskMapper.taskToResponse(t));
     }
+
     @PutMapping("/changeStatus/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<?> changeStatus(@PathVariable Long id, @RequestBody UpsertPutRequest status) {

@@ -32,7 +32,8 @@ public class Task {
     @JoinColumn(name = "assignee_id")
     private User assignee;
     private List<String> comments = new ArrayList<>();
-    public void addComment(String comment){
+
+    public void addComment(String comment) {
         if (comments == null) {
             comments = new ArrayList<>();
         }

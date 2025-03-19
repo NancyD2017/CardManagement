@@ -12,5 +12,6 @@ import java.util.List;
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
     Page<Task> findAll(Pageable pageable);
+
     List<Task> findAll(Specification<Task> specification, Pageable pageable);
 }

@@ -22,7 +22,7 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
 
-    public List<Task> filterBy(TaskFilter filter){
+    public List<Task> filterBy(TaskFilter filter) {
         Specification<Task> specification = TaskSpecification.withFilter(filter);
         return taskRepository.findAll(specification, filter.toPageable());
     }
@@ -54,6 +54,7 @@ public class TaskService {
         existedTask.addComment(comment);
         return taskRepository.save(existedTask);
     }
+
     public Task changeStatus(Long id, String status) {
         Task existedTask = findById(id);
         try {

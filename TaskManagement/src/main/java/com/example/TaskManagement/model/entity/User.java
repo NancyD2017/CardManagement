@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -22,6 +23,11 @@ public class User {
     private String username;
     private String email;
     private String password;
+    @OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE)
+    private List<Task> authoredTasks;
+
+    @OneToMany(mappedBy = "assignee", cascade = CascadeType.REMOVE)
+    private List<Task> assignedTasks;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @JoinTable(name = "roles", joinColumns = @JoinColumn(name = "user_id"))
