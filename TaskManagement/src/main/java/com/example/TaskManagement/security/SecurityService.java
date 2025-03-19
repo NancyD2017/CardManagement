@@ -37,7 +37,7 @@ public class SecurityService {
 
     public AuthResponse authenticateUser(LoginRequest loginRequest){
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                loginRequest.getUsername(),
+                loginRequest.getEmail(),
                 loginRequest.getPassword()
         ));
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -67,7 +67,7 @@ public class SecurityService {
 
         return userRepository.save(user);
     }
-//TODO убрать все  exception
+//TODO remove exception
     public RefreshTokenResponse refreshToken(RefreshTokenRequest request){
         String requestRefreshToken = request.getRefreshToken();
 

@@ -10,6 +10,6 @@ public class UpsertTaskRequest {
     private String description;
     private TaskStatus status;
     private Priority priority;
-    private String authorId;
-    private String assigneeId;
+    private Long authorId;
+    private Long assigneeId;
 }

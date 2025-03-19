@@ -2,6 +2,7 @@ package com.example.TaskManagement.controller;
 
 import com.example.TaskManagement.mapper.TaskMapper;
 import com.example.TaskManagement.model.entity.Task;
+import com.example.TaskManagement.model.request.UpsertPutRequest;
 import com.example.TaskManagement.model.request.UpsertTaskRequest;
 import com.example.TaskManagement.model.response.TaskListResponse;
 import com.example.TaskManagement.model.response.TaskResponse;
@@ -34,18 +35,36 @@ public class TaskController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
-    public ResponseEntity<TaskResponse> createTask(@RequestBody UpsertTaskRequest task) {
-        return ResponseEntity.ok(taskMapper.taskToResponse(taskService.save(taskMapper.requestToTask(task), task)));
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<?> createTask(@RequestBody UpsertTaskRequest task) {
+        Task t = taskService.save(taskMapper.requestToTask(task), task);
+        return t != null
+                ? ResponseEntity.ok(taskMapper.taskToResponse(t))
+                : ResponseEntity.badRequest().body("Wrong authorId or assigneeId");
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
-    public ResponseEntity<TaskResponse> updateTask(@PathVariable Long id, @RequestBody UpsertTaskRequest task) {
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<?> updateTask(@PathVariable Long id, @RequestBody UpsertTaskRequest task) {
         Task t = taskService.update(taskMapper.requestToTask(id, task), task);
         return t != null
                 ? ResponseEntity.ok(taskMapper.taskToResponse(t))
-                : ResponseEntity.notFound().build();
+                : ResponseEntity.badRequest().body("Wrong authorId or assigneeId");
+    }
+
+    @PutMapping("/addComment/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    public ResponseEntity<TaskResponse> addComment(@PathVariable Long id, @RequestBody UpsertPutRequest comment) {
+        Task t = taskService.addComment(id, comment.getRequest());
+        return ResponseEntity.ok(taskMapper.taskToResponse(t));
+    }
+    @PutMapping("/changeStatus/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    public ResponseEntity<?> changeStatus(@PathVariable Long id, @RequestBody UpsertPutRequest status) {
+        Task t = taskService.changeStatus(id, status.getRequest());
+        return t != null
+                ? ResponseEntity.ok(taskMapper.taskToResponse(t))
+                : ResponseEntity.badRequest().body("Wrong status");
     }
 
     @DeleteMapping("/{id}")

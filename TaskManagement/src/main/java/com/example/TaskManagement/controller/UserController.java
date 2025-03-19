@@ -42,8 +42,8 @@ public class UserController {
     }
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody UpsertUserRequest user){
-        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-            return ResponseEntity.badRequest().body("Username already exists!");
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            return ResponseEntity.badRequest().body("User with email " + user.getEmail() + " already exists!");
         }
         return ResponseEntity.ok(userMapper.userToResponse(securityService.register(user)));
     }

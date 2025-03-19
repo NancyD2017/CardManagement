@@ -3,13 +3,11 @@ package com.example.TaskManagement.service;
 import com.example.TaskManagement.utils.BeanUtils;
 import com.example.TaskManagement.model.entity.User;
 import com.example.TaskManagement.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.text.MessageFormat;
 import java.util.List;
 
 @Service
@@ -23,8 +21,7 @@ public class UserService {
     }
 
     public User findById(Long id){
-        return userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(MessageFormat.format(
-                "User with ID {0} not found!", id)));
+        return userRepository.findById(id).orElse(null);
     }
     public User save(User user){
         return userRepository.save(user);

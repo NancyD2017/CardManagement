@@ -1,7 +1,7 @@
 package com.example.TaskManagement.model.entity;
 
 public enum TaskStatus {
-    TODO,
+    TO_DO,
     IN_PROGRESS,
     DONE;
 }

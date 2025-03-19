@@ -1,10 +1,14 @@
 package com.example.TaskManagement.aspect;
 
 import com.example.TaskManagement.exception.AccessDeniedException;
+import com.example.TaskManagement.model.entity.Role;
 import com.example.TaskManagement.model.entity.Task;
+import com.example.TaskManagement.model.entity.User;
+import com.example.TaskManagement.model.request.UpsertPutRequest;
 import com.example.TaskManagement.model.request.UpsertTaskRequest;
 import com.example.TaskManagement.security.AppUserDetails;
 import com.example.TaskManagement.service.TaskService;
+import com.example.TaskManagement.service.UserService;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,37 +23,27 @@ public class TaskAccessAspect {
 
     @Autowired
     private TaskService taskService;
+    @Autowired
+    private UserService userService;
 
-    @Before("execution(* com.example.springboottaskportal.web.controller.TaskController.update(..)) && args(taskId, taskDto)")
-    public void checkUpdateAccess(Long taskId, UpsertTaskRequest taskDto) throws AccessDeniedException {
+    @Before("execution(* com.example.TaskManagement.controller.TaskController.update(..)) && args(taskId, statusDto)")
+    public void checkStatusAccess(Long taskId, UpsertPutRequest statusDto) throws AccessDeniedException {
         validateAccess(taskId);
     }
 
-    @Before("execution(* com.example.springboottaskportal.web.controller.TaskController.delete(..)) && args(taskId)")
-    public void checkDeleteAccess(Long taskId) throws AccessDeniedException {
-        validateDeleteAccess(taskId);
+    @Before("execution(* com.example.TaskManagement.controller.TaskController.addComment(..)) && args(taskId, commentDto)")
+    public void checkCommentAccess(Long taskId, UpsertPutRequest commentDto) throws AccessDeniedException {
+        validateAccess(taskId);
     }
 
     private void validateAccess(Long taskId) throws AccessDeniedException {
         Task task = taskService.findById(taskId);
-
-        if (task == null || !taskService.findById(taskId).getAssignee().getId().equals(findUserId())) {
-            throw new AccessDeniedException("You do not have permission to access this task item.");
-        }
-    }
-
-    private void validateDeleteAccess(Long taskId) throws AccessDeniedException {
-        Task task = taskService.findById(taskId);
-
-        if (task == null) {
-            throw new AccessDeniedException("There's no task with such id.");
-        }
-        Long userId = findUserId();
-        if(userId != null && !task.getAssignee().getId().equals(userId)){
-            if ((hasRole("ROLE_ADMIN") || hasRole("ROLE_MODERATOR"))){
-                return;
+        Long id = findUserId();
+        User user = userService.findById(id);
+        if (!user.getRoles().contains(Role.ROLE_ADMIN)) {
+            if (task.getAssignee() == null || !task.getAssignee().getId().equals(id)) {
+                throw new AccessDeniedException("You do not have permission to access this task item.");
             }
-            throw new AccessDeniedException("You do not have permission to access this task item.");
         }
     }
     private boolean hasRole(String roleName){
