@@ -12,6 +12,7 @@
     <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/exception/RefreshTokenException.java" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/exception/UpdateStateException.java" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/exception/handlers" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/filter" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/mapper" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/model" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/repository" charset="windows-1251" />

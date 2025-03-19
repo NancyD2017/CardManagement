@@ -1,7 +1,9 @@
 package com.example.TaskManagement.controller;
 
+import com.example.TaskManagement.filter.TaskFilter;
 import com.example.TaskManagement.mapper.TaskMapper;
 import com.example.TaskManagement.model.entity.Task;
+import com.example.TaskManagement.model.request.TaskFilterRequest;
 import com.example.TaskManagement.model.request.UpsertPutRequest;
 import com.example.TaskManagement.model.request.UpsertTaskRequest;
 import com.example.TaskManagement.model.response.TaskListResponse;
@@ -32,6 +34,20 @@ public class TaskController {
         return taskService.findById(id) != null
                 ? ResponseEntity.ok(taskMapper.taskToResponse(taskService.findById(id)))
                 : ResponseEntity.notFound().build();
+    }
+    @GetMapping("/filter")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    public ResponseEntity<?> filterBy(@RequestBody TaskFilterRequest filter) {
+        TaskFilter taskFilter = new TaskFilter();
+
+        taskFilter.setAuthorId(filter.getAuthorId());
+        taskFilter.setAssigneeId(filter.getAssigneeId());
+        taskFilter.setPageNumber(filter.getPageNumber() != null ? filter.getPageNumber() : 0);
+        taskFilter.setPageSize(filter.getPageSize() != null ? filter.getPageSize() : 10);
+
+        return filter.getAssigneeId() == null && filter.getAuthorId() == null
+                ? ResponseEntity.badRequest().body("You need to specify authorId or assigneeId")
+                : ResponseEntity.ok(taskMapper.taskListToTaskResponseList(taskService.filterBy(taskFilter)));
     }
 
     @PostMapping

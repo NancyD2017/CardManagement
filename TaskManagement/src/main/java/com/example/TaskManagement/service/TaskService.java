@@ -1,5 +1,7 @@
 package com.example.TaskManagement.service;
 
+import com.example.TaskManagement.filter.TaskFilter;
+import com.example.TaskManagement.filter.TaskSpecification;
 import com.example.TaskManagement.model.entity.Task;
 import com.example.TaskManagement.model.entity.TaskStatus;
 import com.example.TaskManagement.model.request.UpsertTaskRequest;
@@ -8,6 +10,7 @@ import com.example.TaskManagement.repository.UserRepository;
 import com.example.TaskManagement.utils.BeanUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -18,6 +21,11 @@ import java.util.*;
 public class TaskService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+
+    public List<Task> filterBy(TaskFilter filter){
+        Specification<Task> specification = TaskSpecification.withFilter(filter);
+        return taskRepository.findAll(specification, filter.toPageable());
+    }
 
     public List<Task> findAll() {
         return taskRepository.findAll();
