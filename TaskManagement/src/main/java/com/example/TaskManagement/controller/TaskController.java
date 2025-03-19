@@ -8,6 +8,7 @@ import com.example.TaskManagement.model.response.TaskResponse;
 import com.example.TaskManagement.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,13 +20,13 @@ public class TaskController {
     private final TaskMapper taskMapper;
 
     @GetMapping
-    //TODO
-    //@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_MODERATOR') or hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<TaskListResponse> getAllTasks() {
         return ResponseEntity.ok(taskMapper.taskListToTaskResponseList(taskService.findAll()));
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<TaskResponse> getById(@PathVariable Long id) {
         return taskService.findById(id) != null
                 ? ResponseEntity.ok(taskMapper.taskToResponse(taskService.findById(id)))
@@ -33,11 +34,13 @@ public class TaskController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<TaskResponse> createTask(@RequestBody UpsertTaskRequest task) {
         return ResponseEntity.ok(taskMapper.taskToResponse(taskService.save(taskMapper.requestToTask(task), task)));
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<TaskResponse> updateTask(@PathVariable Long id, @RequestBody UpsertTaskRequest task) {
         Task t = taskService.update(taskMapper.requestToTask(id, task), task);
         return t != null
@@ -46,6 +49,7 @@ public class TaskController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
         taskService.deleteById(id);
         return ResponseEntity.noContent().build();

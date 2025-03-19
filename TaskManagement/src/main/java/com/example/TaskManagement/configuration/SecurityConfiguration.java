@@ -48,7 +48,7 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests((auth) -> auth
-                .requestMatchers("taskManagement/tasks/**").permitAll()
+                .requestMatchers("taskManagement/tasks/**").authenticated()
                 .requestMatchers("taskManagement/users/**").permitAll()
                 .anyRequest().authenticated()
         ).exceptionHandling(configurer -> configurer.authenticationEntryPoint(jwtAuthenticationEntryPoint))

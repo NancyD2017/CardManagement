@@ -57,16 +57,17 @@ public class SecurityService {
                 .roles(roles)
                 .build();
     }
-    public void register(UpsertUserRequest createUserRequest){
+    public User register(UpsertUserRequest createUserRequest){
         var user = User.builder()
                 .username(createUserRequest.getUsername())
                 .password(passwordEncoder.encode(createUserRequest.getPassword()))
+                .email(createUserRequest.getEmail())
                 .build();
         user.setRoles(createUserRequest.getRoles());
 
-        userRepository.save(user);
+        return userRepository.save(user);
     }
-
+//TODO убрать все  exception
     public RefreshTokenResponse refreshToken(RefreshTokenRequest request){
         String requestRefreshToken = request.getRefreshToken();
 
