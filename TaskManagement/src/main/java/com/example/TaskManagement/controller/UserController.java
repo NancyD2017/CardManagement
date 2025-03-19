@@ -12,6 +12,7 @@ import com.example.TaskManagement.model.response.UserResponse;
 import com.example.TaskManagement.repository.UserRepository;
 import com.example.TaskManagement.security.SecurityService;
 import com.example.TaskManagement.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +27,7 @@ public class UserController {
     private final SecurityService securityService;
 
     @PostMapping("/signing")
-    public ResponseEntity<AuthResponse> authUser(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<AuthResponse> authUser(@Valid @RequestBody LoginRequest loginRequest) {
         return ResponseEntity.ok(securityService.authenticateUser(loginRequest));
     }
 
@@ -41,7 +42,7 @@ public class UserController {
                 : ResponseEntity.notFound().build();
     }
     @PostMapping
-    public ResponseEntity<?> createUser(@RequestBody UpsertUserRequest user){
+    public ResponseEntity<?> createUser(@Valid @RequestBody UpsertUserRequest user){
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             return ResponseEntity.badRequest().body("User with email " + user.getEmail() + " already exists!");
         }
@@ -54,7 +55,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @RequestBody UpsertUserRequest user){
+    public ResponseEntity<UserResponse> updateUser(@Valid @PathVariable Long id, @RequestBody UpsertUserRequest user){
         User u = userService.update(userMapper.requestToUser(id, user));
         return u != null
                 ? ResponseEntity.ok(userMapper.userToResponse(u))
