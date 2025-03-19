@@ -1,5 +1,6 @@
 package com.example.TaskManagement.model.request;
 
+import com.example.TaskManagement.model.entity.Role;
 import lombok.Data;
 
 import java.util.Set;
@@ -8,6 +9,6 @@ import java.util.Set;
 public class UpsertUserRequest {
     private String username;
     private String email;
-    private Set<String> roles;
+    private Set<Role> roles;
     private String password;
 }

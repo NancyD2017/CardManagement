@@ -10,8 +10,8 @@ spring:
       ddl-auto: update
     show-sql: true
 
-#app:
-#  jwt:
-#    secret: "SomeSecretKeyoidhujh9jkoi9ydhuj534nh89jjnhs7xvjmhziklogjmmskmrpojksgns8ejHUYhfnnbythbfhjz7lUHNN89f79gin58ujmgnbn"
-#    tokenExpiration: 300m
-#    refreshTokenExpiration: 30m
+app:
+  jwt:
+    secret: "SomeSecretKeyoidhujh9jkoi9ydhuj534nh89jjnhs7xvjmhziklogjmmskmrpojksgns8ejHUYhfnnbythbfhjz7lUHNN89f79gin58ujmgnbn"
+    tokenExpiration: 300m
+    refreshTokenExpiration: 30m

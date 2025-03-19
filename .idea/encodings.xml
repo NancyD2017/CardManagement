@@ -1,15 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/aspect" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/configuration" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/controller" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/entity" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/event" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/exception/AccessDeniedException.java" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/exception/AlreadyExistsException.java" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/exception/EntityNotFoundException.java" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/exception/RefreshTokenException.java" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/exception/UpdateStateException.java" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/exception/handlers" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/mapper" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/model" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/repository" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/security" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/service" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/TaskManagement/src/main/resources/application.yml" charset="windows-1251" />
-    <file url="file://$PROJECT_DIR$/TaskManagement/src/main/resources/docker-compose.yml" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/TaskManagement/src/main/resources/docker-compose.yml" charset="windows-1251" />
   </component>
 </project>
