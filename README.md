@@ -15,7 +15,7 @@ Task Management — это REST API сервис для управления з�
 
 1. Клонирование репозитория
 
-git clone https://github.com/NancyD2017/SearchEngine.git
+git clone https://github.com/NancyD2017/TaskManagement.git
 
 cd task-management
 
