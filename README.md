@@ -15,9 +15,11 @@ Task Management — это REST API сервис для управления з�
 
 1. Клонирование репозитория
 
-git clone https://github.com/NancyD2017/SearchEngine.git
+Перейдите в папку, в которой Вы желаете сохранить проект и вызовите в ней командную строку. Выполните команды:
 
-cd task-management
+git clone https://github.com/NancyD2017/TaskManagement.git
+
+cd TaskManagement\TaskManagement\src\main\resources
 
 2. Запуск инфраструктуры (PostgreSQL + Redis)
 
@@ -27,11 +29,13 @@ docker-compose up -d
 
 3. Запуск приложения
 
-./mvnw spring-boot:run
+cd ..
 
-или
+cd ..
 
-mvn spring-boot:run
+cd ..
+
+.\gradlew bootRun
 
 4. После успешного запуска API доступно по адресу:
 
