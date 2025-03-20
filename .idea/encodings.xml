@@ -4,6 +4,8 @@
     <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/aspect" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/configuration" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/controller" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/controller/TaskController.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/controller/UserController.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/entity" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/event" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/TaskManagement/src/main/java/com/example/TaskManagement/exception/AccessDeniedException.java" charset="windows-1251" />

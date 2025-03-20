@@ -48,8 +48,9 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("taskManagement/tasks/**").authenticated()
-                        .requestMatchers("taskManagement/users/**").permitAll()
+                        .requestMatchers("/taskManagement/tasks/**").authenticated()
+                        .requestMatchers("/taskManagement/users/**").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/error", "/favicon.ico").permitAll()
                         .anyRequest().authenticated()
                 ).exceptionHandling(configurer -> configurer.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .csrf(AbstractHttpConfigurer::disable)
