@@ -1,31 +1,34 @@
 package com.example.TaskManagement.model.entity;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.redis.core.RedisHash;
-import org.springframework.data.redis.core.index.Indexed;
 
 import java.time.Instant;
 
-@RedisHash("refresh_tokens")
+@Entity
+@Table(name = "refresh_tokens")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class RefreshToken {
     @Id
-    @Indexed
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Indexed
+    @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Indexed
+    @Column(name = "token", nullable = false, unique = true)
     private String token;
 
-    @Indexed
+    @Column(name = "expiry_date", nullable = false)
     private Instant expiryDate;
+
+    public boolean isExpired() {
+        return Instant.now().isAfter(expiryDate);
+    }
 }

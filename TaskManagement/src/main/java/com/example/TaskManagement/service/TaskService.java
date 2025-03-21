@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +38,9 @@ public class TaskService {
     public Task save(Task task, UpsertTaskRequest request) {
         setAuthorAndAssignee(task, request);
         if (task.getAssignee() == null || task.getAuthor() == null) return null;
-        return taskRepository.save(task);
+        Task t = taskRepository.save(task);
+        updateTasks(t);
+        return t;
     }
 
     public Task update(Task task, UpsertTaskRequest request) {
@@ -46,7 +48,9 @@ public class TaskService {
         BeanUtils.copyNonNullProperties(task, existedTask);
         setAuthorAndAssignee(task, request);
         if (task.getAssignee() == null || task.getAuthor() == null) return null;
-        return taskRepository.save(task);
+        Task t = taskRepository.save(task);
+        updateTasks(t);
+        return t;
     }
 
     public Task addComment(Long id, String comment) {
@@ -79,5 +83,10 @@ public class TaskService {
             Long assigneeId = request.getAssigneeId();
             task.setAssignee(userRepository.findById(assigneeId).orElse(null));
         }
+    }
+
+    private void updateTasks(Task task) {
+        task.getAuthor().addAuthoredTask(task);
+        task.getAssignee().addAssignedTask(task);
     }
 }

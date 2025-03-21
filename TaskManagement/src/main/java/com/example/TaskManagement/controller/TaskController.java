@@ -33,7 +33,7 @@ public class TaskController {
     @GetMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<TaskListResponse> getAllTasks() {
-        return ResponseEntity.ok(taskMapper.taskListToTaskResponseList(taskService.findAll()));
+        return ResponseEntity.ok(taskMapper.toTaskListResponse(taskService.findAll()));
     }
 
     @Operation(summary = "Получить задачу по ID", description = "Возвращает задачу по идентификатору (только для админов)")

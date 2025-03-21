@@ -9,7 +9,6 @@ import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
@@ -25,10 +24,11 @@ public interface TaskMapper {
 
     TaskResponse taskToResponse(Task task);
 
-    default TaskListResponse taskListToTaskResponseList(List<Task> tasks) {
-        TaskListResponse response = new TaskListResponse();
-        response.setTasks(tasks.stream().map(this::taskToResponse).collect(Collectors.toList()));
+    List<TaskResponse> taskListToTaskResponseList(List<Task> tasks);
 
+    default TaskListResponse toTaskListResponse(List<Task> tasks) {
+        TaskListResponse response = new TaskListResponse();
+        response.setTasks(taskListToTaskResponseList(tasks));
         return response;
     }
 }

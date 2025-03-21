@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,4 +35,18 @@ public class User {
     @Column(name = "role_name", nullable = false)
     @Enumerated(EnumType.STRING)
     private Set<Role> roles = new HashSet<>();
+
+    public void addAssignedTask(Task t) {
+        if (assignedTasks == null) {
+            assignedTasks = new ArrayList<>();
+        }
+        assignedTasks.add(t);
+    }
+
+    public void addAuthoredTask(Task t) {
+        if (authoredTasks == null) {
+            authoredTasks = new ArrayList<>();
+        }
+        authoredTasks.add(t);
+    }
 }

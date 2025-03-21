@@ -1,7 +1,6 @@
 package com.example.TaskManagement.controller;
 
 import com.example.TaskManagement.mapper.UserMapper;
-import com.example.TaskManagement.model.entity.User;
 import com.example.TaskManagement.model.request.LoginRequest;
 import com.example.TaskManagement.model.request.RefreshTokenRequest;
 import com.example.TaskManagement.model.request.UpsertUserRequest;
@@ -84,19 +83,6 @@ public class UserController {
         return rtr != null
                 ? ResponseEntity.ok().body(rtr)
                 : ResponseEntity.badRequest().body("Exception trying to refresh token");
-    }
-
-    @Operation(summary = "Обновить пользователя", description = "Обновляет данные пользователя по ID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Пользователь обновлен"),
-            @ApiResponse(responseCode = "404", description = "Пользователь не найден")
-    })
-    @PutMapping("/{id}")
-    public ResponseEntity<UserResponse> updateUser(@Valid @PathVariable Long id, @RequestBody UpsertUserRequest user) {
-        User u = userService.update(userMapper.requestToUser(id, user));
-        return u != null
-                ? ResponseEntity.ok(userMapper.userToResponse(u))
-                : ResponseEntity.notFound().build();
     }
 
     @Operation(summary = "Удалить пользователя", description = "Удаляет пользователя по ID")

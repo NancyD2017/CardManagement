@@ -6,10 +6,12 @@ Task Management — это REST API сервис для управления з�
 
 ## Стек технологий
 
-- Docker и Docker Compose
 - Java 17+
-- Maven 3.8+
-- PostgreSQL и Redis (автоматически поднимаются через Docker)
+- Spring Boot, Spring Security, Spring Data JPA
+- MySQL (как база данных)
+- Maven (для сборки проекта)
+- Docker и Docker Compose (опционально, для запуска MySQL)
+- Swagger (для документации API)
 
 ## Установка и запуск
 
@@ -21,11 +23,9 @@ git clone https://github.com/NancyD2017/TaskManagement.git
 
 cd TaskManagement\TaskManagement\src\main\resources
 
-2. Запуск инфраструктуры (PostgreSQL + Redis)
+2. Запуск инфраструктуры (MySQL)
 
 docker-compose up -d
-
-Это поднимет контейнеры с PostgreSQL (порт 5434) и Redis (порт 6379).
 
 3. Запуск приложения
 
