@@ -24,16 +24,17 @@ public class User {
     private String username;
     private String email;
     private String password;
-    @OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Task> authoredTasks;
 
-    @OneToMany(mappedBy = "assignee", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "assignee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Task> assignedTasks;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @JoinTable(name = "roles", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role_name", nullable = false)
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private Set<Role> roles = new HashSet<>();
 
     public void addAssignedTask(Task t) {

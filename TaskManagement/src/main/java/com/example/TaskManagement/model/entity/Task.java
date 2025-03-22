@@ -24,11 +24,11 @@ public class Task {
     @Enumerated(EnumType.STRING)
     private Priority priority;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "author_id")
     private User author;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "assignee_id")
     private User assignee;
     private List<String> comments = new ArrayList<>();
