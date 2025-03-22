@@ -1,0 +1,27 @@
+spring:
+  main:
+    allow-circular-references: true
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3307/task_management?useSSL=false&requireSSL=false&allowPublicKeyRetrieval=true}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:password}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+logging:
+  level:
+    org:
+      springframework=DEBUG:
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:SomeSecretKeyoidhujh9jkoi9ydhuj534nh89jjnhs7xvjmhziklogjmmskmrpojksgns8ejHUYhfnnbythbfhjz7lUHNN89f79gin58ujmgnbn}
+    tokenExpiration: ${JWT_TOKEN_EXPIRATION:300m}
+    refreshTokenExpiration: ${JWT_REFRESH_TOKEN_EXPIRATION:30m}
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
