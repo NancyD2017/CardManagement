@@ -1,6 +1,7 @@
 package com.example.TaskManagement.controller;
 
 import com.example.TaskManagement.mapper.UserMapper;
+import com.example.TaskManagement.model.entity.User;
 import com.example.TaskManagement.model.request.LoginRequest;
 import com.example.TaskManagement.model.request.RefreshTokenRequest;
 import com.example.TaskManagement.model.request.UpsertUserRequest;
@@ -69,7 +70,10 @@ public class UserController {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             return ResponseEntity.badRequest().body("User with email " + user.getEmail() + " already exists!");
         }
-        return ResponseEntity.ok(userMapper.userToResponse(securityService.register(user)));
+        User u = securityService.register(user);
+        return u == null
+                ? ResponseEntity.badRequest().body("Bad data")
+                : ResponseEntity.ok(userMapper.userToResponse(u));
     }
 
     @Operation(summary = "Обновить токен пользователя", description = "Обновляет токен пользователя по истечению срока его действия")
@@ -91,7 +95,8 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Пользователь не найден")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+        if (userService.findById(id) == null) return ResponseEntity.notFound().build();
         userService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

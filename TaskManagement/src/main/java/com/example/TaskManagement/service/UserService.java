@@ -4,7 +4,6 @@ import com.example.TaskManagement.model.entity.User;
 import com.example.TaskManagement.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,7 +13,6 @@ import java.util.List;
 @Slf4j
 public class UserService {
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
     public List<User> findAll() {
         return userRepository.findAll();
@@ -25,7 +23,11 @@ public class UserService {
     }
 
     public User save(User user) {
-        return userRepository.save(user);
+        try {
+            return userRepository.save(user);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public void deleteById(Long id) {

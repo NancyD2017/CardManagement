@@ -55,6 +55,7 @@ public class TaskService {
 
     public Task addComment(Long id, String comment) {
         Task existedTask = findById(id);
+        if (existedTask == null) return null;
         existedTask.addComment(comment);
         return taskRepository.save(existedTask);
     }
@@ -64,7 +65,7 @@ public class TaskService {
         try {
             TaskStatus t = TaskStatus.valueOf(status);
             existedTask.setStatus(t);
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             return null;
         }
         return taskRepository.save(existedTask);

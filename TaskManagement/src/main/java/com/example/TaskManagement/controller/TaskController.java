@@ -8,6 +8,7 @@ import com.example.TaskManagement.model.request.UpsertPutRequest;
 import com.example.TaskManagement.model.request.UpsertTaskRequest;
 import com.example.TaskManagement.model.response.TaskListResponse;
 import com.example.TaskManagement.model.response.TaskResponse;
+import com.example.TaskManagement.repository.TaskRepository;
 import com.example.TaskManagement.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -25,7 +26,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Задачи", description = "Контроллер для управления задачами")
 public class TaskController {
     private final TaskService taskService;
-
+    private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
 
     @Operation(summary = "Получить все задачи", description = "Возвращает список всех задач (только для админов)")
@@ -72,6 +73,9 @@ public class TaskController {
     @PostMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> createTask(@Valid @RequestBody UpsertTaskRequest task) {
+        if (taskRepository.findByTitle(task.getTitle()).isPresent()) {
+            return ResponseEntity.badRequest().body("Task with title " + task.getTitle() + " already exists!");
+        }
         Task t = taskService.save(taskMapper.requestToTask(task), task);
         return t != null
                 ? ResponseEntity.ok(taskMapper.taskToResponse(t))
@@ -86,6 +90,9 @@ public class TaskController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> updateTask(@Valid @PathVariable Long id, @RequestBody UpsertTaskRequest task) {
+        if (taskRepository.findByTitle(task.getTitle()).isPresent()) {
+            return ResponseEntity.badRequest().body("Task with title " + task.getTitle() + " already exists!");
+        }
         Task t = taskService.update(taskMapper.requestToTask(id, task), task);
         return t != null
                 ? ResponseEntity.ok(taskMapper.taskToResponse(t))
@@ -93,23 +100,33 @@ public class TaskController {
     }
 
     @Operation(summary = "Добавить комментарий к задаче", description = "Добавляет новый комментарий к задаче (админ/пользователь)")
-    @ApiResponse(responseCode = "201", description = "Комментарий к задаче добавлен")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Комментарий к задаче добавлен"),
+            @ApiResponse(responseCode = "404", description = "Задача не найдена")
+    })
     @PutMapping("/addComment/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<TaskResponse> addComment(@PathVariable Long id, @RequestBody UpsertPutRequest comment) {
         Task t = taskService.addComment(id, comment.getRequest());
-        return ResponseEntity.ok(taskMapper.taskToResponse(t));
+        return t != null
+                ? ResponseEntity.ok(taskMapper.taskToResponse(t))
+                : ResponseEntity.notFound().build();
     }
 
     @Operation(summary = "Изменить статус задачи", description = "Изменяет статус задачи (админ/пользователь)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Статус задачи обновлен"),
-            @ApiResponse(responseCode = "400", description = "Некорректный статус")
+            @ApiResponse(responseCode = "400", description = "Некорректный статус"),
+            @ApiResponse(responseCode = "404", description = "Задача не найдена")
     })
     @PutMapping("/changeStatus/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<?> changeStatus(@PathVariable Long id, @RequestBody UpsertPutRequest status) {
-        Task t = taskService.changeStatus(id, status.getRequest());
+        Task t = taskService.findById(id);
+        if (t == null) {
+            return ResponseEntity.notFound().build();
+        }
+        t = taskService.changeStatus(id, status.getRequest());
         return t != null
                 ? ResponseEntity.ok(taskMapper.taskToResponse(t))
                 : ResponseEntity.badRequest().body("Wrong status");
