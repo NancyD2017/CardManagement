@@ -1,18 +1,16 @@
 package com.example.TaskManagement.model.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.Instant;
 
 @Entity
 @Table(name = "refresh_tokens")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
+@Setter
 @Builder
 public class RefreshToken {
     @Id
@@ -30,5 +28,12 @@ public class RefreshToken {
 
     public boolean isExpired() {
         return Instant.now().isAfter(expiryDate);
+    }
+
+    public RefreshToken(Long id, Long userId, String token, Instant expiryDate) {
+        this.id = id;
+        this.userId = userId;
+        this.token = token;
+        this.expiryDate = expiryDate;
     }
 }

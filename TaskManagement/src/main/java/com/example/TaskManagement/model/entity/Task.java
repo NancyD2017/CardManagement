@@ -1,18 +1,16 @@
 package com.example.TaskManagement.model.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "tasks")
+@Getter
+@Setter
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,5 +36,20 @@ public class Task {
             comments = new ArrayList<>();
         }
         comments.add(comment);
+    }
+
+    public Task(Long id, String title, String description, TaskStatus status, Priority priority, User author, User assignee, List<String> comments) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.status = status;
+        this.priority = priority;
+        this.author = author;
+        this.assignee = assignee;
+        this.comments = comments;
+    }
+
+    public Task() {
+
     }
 }

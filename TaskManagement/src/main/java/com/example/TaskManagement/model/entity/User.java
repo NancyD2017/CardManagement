@@ -1,22 +1,20 @@
 package com.example.TaskManagement.model.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "users")
 @Builder
+@Getter
+@Setter
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,5 +47,19 @@ public class User {
             authoredTasks = new ArrayList<>();
         }
         authoredTasks.add(t);
+    }
+
+    public User(Long id, String username, String email, String password, List<Task> authoredTasks, List<Task> assignedTasks, Set<Role> roles) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.authoredTasks = authoredTasks;
+        this.assignedTasks = assignedTasks;
+        this.roles = roles;
+    }
+
+    public User() {
+
     }
 }

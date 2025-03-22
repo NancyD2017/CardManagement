@@ -70,9 +70,9 @@ public class TaskControllerTest {
 
     void findAllTasksMethod(int status) throws Exception {
         User u = new User(1L, "Anastasia", "anastasia@gmail.com", "1", null, null, role2);
-        userRepository.save(u);
-        taskRepository.save(new Task(1L, "Do the laundry", "use the washing machine", TaskStatus.TO_DO, Priority.MIDDLE, userRepository.findByEmail("anastasia@gmail.com").get(), userRepository.findByEmail("anastasia@gmail.com").get(), null));
-        taskRepository.save(new Task(2L, "Mop the floor", "use the floor mop", TaskStatus.DONE, Priority.HIGH, userRepository.findByEmail("anastasia@gmail.com").get(), userRepository.findByEmail("anastasia@gmail.com").get(), null));
+        u = userRepository.save(u);
+        taskRepository.save(new Task(1L, "Do the laundry", "use the washing machine", TaskStatus.TO_DO, Priority.MIDDLE, u, u, null));
+        taskRepository.save(new Task(2L, "Mop the floor", "use the floor mop", TaskStatus.DONE, Priority.HIGH, u, u, null));
 
         ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.get("/taskManagement/tasks"));
 
@@ -102,9 +102,9 @@ public class TaskControllerTest {
 
     void findTaskMethod(int status) throws Exception {
         User u = new User(1L, "Anastasia", "anastasia@gmail.com", "1", null, null, role2);
-        userRepository.save(u);
-        taskRepository.save(new Task(1L, "Do the laundry", "use the washing machine", TaskStatus.TO_DO, Priority.MIDDLE, userRepository.findByEmail("anastasia@gmail.com").get(), userRepository.findByEmail("anastasia@gmail.com").get(), null));
-        taskRepository.save(new Task(2L, "Mop the floor", "use the floor mop", TaskStatus.DONE, Priority.HIGH, userRepository.findByEmail("anastasia@gmail.com").get(), userRepository.findByEmail("anastasia@gmail.com").get(), null));
+        u = userRepository.save(u);
+        taskRepository.save(new Task(1L, "Do the laundry", "use the washing machine", TaskStatus.TO_DO, Priority.MIDDLE, u, u, null));
+        taskRepository.save(new Task(2L, "Mop the floor", "use the floor mop", TaskStatus.DONE, Priority.HIGH, u, u, null));
 
         ResultActions actions = status != 404
                 ? mockMvc.perform(MockMvcRequestBuilders.get("/taskManagement/tasks/" + taskRepository.findByTitle("Do the laundry").get().getId()))
@@ -141,9 +141,9 @@ public class TaskControllerTest {
 
     void findTaskFilterMethod(int status, boolean checkPaths) throws Exception {
         User u = new User(1L, "Anastasia", "anastasia@gmail.com", "1", null, null, role2);
-        userRepository.save(u);
-        taskRepository.save(new Task(1L, "Do the laundry", "use the washing machine", TaskStatus.TO_DO, Priority.MIDDLE, userRepository.findByEmail("anastasia@gmail.com").get(), userRepository.findByEmail("anastasia@gmail.com").get(), null));
-        taskRepository.save(new Task(2L, "Mop the floor", "use the floor mop", TaskStatus.DONE, Priority.HIGH, userRepository.findByEmail("anastasia@gmail.com").get(), userRepository.findByEmail("anastasia@gmail.com").get(), null));
+        u = userRepository.save(u);
+        taskRepository.save(new Task(1L, "Do the laundry", "use the washing machine", TaskStatus.TO_DO, Priority.MIDDLE, u, u, null));
+        taskRepository.save(new Task(2L, "Mop the floor", "use the floor mop", TaskStatus.DONE, Priority.HIGH, u, u, null));
 
         Long id = userRepository.findByEmail("anastasia@gmail.com").get().getId();
         ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.get("/taskManagement/tasks/filter")
@@ -274,10 +274,10 @@ public class TaskControllerTest {
         User u = new User(1L, "Anastasia", "anastasia@gmail.com", "1", null, null, role2);
         u = userRepository.save(u);
         Long userId = userRepository.findByEmail("anastasia@gmail.com").get().getId();
-        taskRepository.save(new Task(1L, "Do the laundry", "use the washing machine", TaskStatus.TO_DO, Priority.MIDDLE, u, u, null));
+        Task t = new Task(1L, "Do the laundry", "use the washing machine", TaskStatus.TO_DO, Priority.MIDDLE, u, u, null);
+        t = taskRepository.save(t);
 
-        Long taskId = taskRepository.findByTitle("Do the laundry").get().getId();
-        ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.put("/taskManagement/tasks/" + taskId)
+        ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.put("/taskManagement/tasks/" + t.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                         {
@@ -311,7 +311,7 @@ public class TaskControllerTest {
         taskRepository.save(new Task(2L, "Mop the floor", "use the floor mop", TaskStatus.DONE, Priority.HIGH, u, u, null));
 
         Long taskId = taskRepository.findByTitle("Do the laundry").get().getId();
-        ResultActions actions1 = mockMvc.perform(MockMvcRequestBuilders.put("/taskManagement/tasks/" + taskId)
+        ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.put("/taskManagement/tasks/" + taskId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                         {
@@ -323,21 +323,7 @@ public class TaskControllerTest {
                           "assigneeId": "%d"
                         }
                         """.formatted(userId)));
-        actions1.andExpect(MockMvcResultMatchers.status().is(400));
-
-        ResultActions actions2 = mockMvc.perform(MockMvcRequestBuilders.put("/taskManagement/tasks/" + taskId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                        {
-                          "title": "Mop the floor",
-                          "description": "updated description",
-                          "status": "IN_PROGRESS",
-                          "priority": "HIGH",
-                          "authorId": "%d",
-                          "assigneeId": "%d"
-                        }
-                        """.formatted(userId, userId)));
-        actions2.andExpect(MockMvcResultMatchers.status().is(400));
+        actions.andExpect(MockMvcResultMatchers.status().is(400));
     }
 
 

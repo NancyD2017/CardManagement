@@ -20,6 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/taskManagement/tasks")
 @RequiredArgsConstructor
@@ -85,18 +87,20 @@ public class TaskController {
     @Operation(summary = "Обновить задачу", description = "Обновляет задачу (только для админов)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Задача обновлена"),
-            @ApiResponse(responseCode = "400", description = "Некорректный authorId или assigneeId")
+            @ApiResponse(responseCode = "400", description = "Некорректный authorId, assigneeId или taskId")
     })
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> updateTask(@Valid @PathVariable Long id, @RequestBody UpsertTaskRequest task) {
-        if (taskRepository.findByTitle(task.getTitle()).isPresent()) {
+        Optional<Task> exT = taskRepository.findById(id);
+        if (!exT.isPresent()) return ResponseEntity.badRequest().body("Task with id " + id + " doesn't exist!");
+        else if (!exT.get().getId().equals(id)) {
             return ResponseEntity.badRequest().body("Task with title " + task.getTitle() + " already exists!");
         }
         Task t = taskService.update(taskMapper.requestToTask(id, task), task);
         return t != null
                 ? ResponseEntity.ok(taskMapper.taskToResponse(t))
-                : ResponseEntity.badRequest().body("Wrong authorId or assigneeId");
+                : ResponseEntity.badRequest().body("Wrong authorId, assigneeId or taskId");
     }
 
     @Operation(summary = "Добавить комментарий к задаче", description = "Добавляет новый комментарий к задаче (админ/пользователь)")

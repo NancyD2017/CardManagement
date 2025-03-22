@@ -45,6 +45,9 @@ public class TaskService {
 
     public Task update(Task task, UpsertTaskRequest request) {
         Task existedTask = findById(task.getId());
+        if (existedTask == null) {
+            return null;
+        }
         BeanUtils.copyNonNullProperties(task, existedTask);
         setAuthorAndAssignee(task, request);
         if (task.getAssignee() == null || task.getAuthor() == null) return null;
