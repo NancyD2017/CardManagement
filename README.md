@@ -21,7 +21,7 @@ Task Management — это REST API сервис для управления з�
 
 git clone https://github.com/NancyD2017/TaskManagement.git
 
-cd TaskManagement\TaskManagement\src\main\resources
+cd task_management\src\main\resources
 
 2. Запуск инфраструктуры (MySQL)
 
