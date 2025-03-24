@@ -9,7 +9,7 @@ Task Management — это REST API сервис для управления з�
 - Java 17+
 - Spring Boot, Spring Security, Spring Data JPA
 - MySQL (как база данных)
-- Maven (для сборки проекта)
+- Gradle (для сборки проекта)
 - Docker и Docker Compose (для запуска MySQL)
 - Swagger (для документации API)
 
