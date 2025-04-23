@@ -10,6 +10,7 @@ import com.example.task_management.model.request.UpsertTaskRequest;
 import com.example.task_management.repository.TaskRepository;
 import com.example.task_management.repository.UserRepository;
 import com.example.task_management.utils.BeanUtils;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
@@ -40,32 +41,34 @@ public class TaskService {
     }
 
     public Task findById(Long id) {
-        return taskRepository.findById(id).orElse(null);
+        return taskRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
     public Task save(Task task, UpsertTaskRequest request) {
-        if (taskRepository.findByTitle(task.getTitle()).isPresent()) return new Task();
+        if (taskRepository.findByTitle(task.getTitle()).isPresent())
+            throw new IllegalArgumentException("Task with title " + task.getTitle() + " already exists!");
         setAuthorAndAssignee(task, request);
-        if (task.getAssignee() == null || task.getAuthor() == null) return null;
+        if (task.getAssignee() == null || task.getAuthor() == null)
+            throw new IllegalArgumentException("Wrong authorId or assigneeId");
         Task t = taskRepository.save(task);
         updateTasks(t);
         return t;
     }
 
     public Task update(Long id, UpsertTaskRequest request) {
-        taskRepository.findAll().forEach(ta -> System.out.println(ta.getTitle() + "@"));
         Task existedTask = taskRepository.findById(id).orElse(null);
-        if (existedTask == null) {
-            return null;
-        }
+        if (existedTask == null) throw new IllegalArgumentException("Task with id " + id + " doesn't exist!");
+
         Task titleT = taskRepository.findByTitle(request.getTitle()).orElse(null);
-        if (titleT != null && !titleT.equals(existedTask)) return new Task();
+        if (titleT != null && !titleT.equals(existedTask))
+            throw new IllegalArgumentException("Task with title " + titleT + " already exists!");
+
         BeanUtils.copyNonNullProperties(taskMapper.requestToTask(request), existedTask);
         setAuthorAndAssignee(existedTask, request);
-        if (existedTask.getAssignee() == null || existedTask.getAuthor() == null) {
-            existedTask.setId(0L);
-            return existedTask;
-        }
+
+        if (existedTask.getAssignee() == null || existedTask.getAuthor() == null)
+            throw new IllegalArgumentException("Wrong authorId or assigneeId");
+
         Task t = taskRepository.save(existedTask);
         updateTasks(t);
         return t;
@@ -73,19 +76,19 @@ public class TaskService {
 
     public Task addComment(Long id, String comment) {
         Task existedTask = taskRepository.findById(id).orElse(null);
-        if (existedTask == null) return null;
+        if (existedTask == null) throw new EntityNotFoundException();
         existedTask.addComment(comment);
         return taskRepository.save(existedTask);
     }
 
     public Task changeStatus(Long id, String status) {
         Task existedTask = taskRepository.findById(id).orElse(null);
-        if (existedTask == null) return null;
+        if (existedTask == null) throw new EntityNotFoundException();
         try {
             TaskStatus t = TaskStatus.valueOf(status);
             existedTask.setStatus(t);
         } catch (Exception e) {
-            return new Task();
+            throw new IllegalArgumentException("Wrong status");
         }
         return taskRepository.save(existedTask);
     }
@@ -107,7 +110,7 @@ public class TaskService {
     }
 
     public boolean deleteById(Long id) {
-        if (!taskRepository.findById(id).isPresent()) return false;
+        if (!taskRepository.findById(id).isPresent()) throw new EntityNotFoundException();
         taskRepository.deleteById(id);
         return true;
     }

@@ -9,13 +9,13 @@ import com.example.task_management.model.response.AuthResponse;
 import com.example.task_management.model.response.RefreshTokenResponse;
 import com.example.task_management.model.response.UserListResponse;
 import com.example.task_management.model.response.UserResponse;
-import com.example.task_management.repository.UserRepository;
 import com.example.task_management.security.SecurityService;
 import com.example.task_management.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Пользователи", description = "Контроллер для управления пользователями")
 public class UserController {
     private final UserService userService;
-    private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final SecurityService securityService;
 
@@ -58,9 +57,7 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getById(@PathVariable Long id) {
         User u = userService.findById(id);
-        return u != null
-                ? ResponseEntity.ok(userMapper.userToResponse(u))
-                : ResponseEntity.notFound().build();
+        return ResponseEntity.ok(userMapper.userToResponse(u));
     }
 
 
@@ -72,9 +69,7 @@ public class UserController {
     @PostMapping
     public ResponseEntity<?> createUser(@Valid @RequestBody UpsertUserRequest user) {
         User u = securityService.register(user);
-        return u == null
-                ? ResponseEntity.badRequest().body("User with email " + user.getEmail() + " already exists!")
-                : ResponseEntity.ok(userMapper.userToResponse(u));
+        return ResponseEntity.ok(userMapper.userToResponse(u));
     }
 
 
@@ -86,9 +81,7 @@ public class UserController {
     @PostMapping("refresh-token")
     public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequest request) {
         RefreshTokenResponse rtr = securityService.refreshToken(request);
-        return rtr != null
-                ? ResponseEntity.ok().body(rtr)
-                : ResponseEntity.badRequest().body("Exception trying to refresh token");
+        return ResponseEntity.ok().body(rtr);
     }
 
 
@@ -99,10 +92,19 @@ public class UserController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
-        return userService.deleteById(id)
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.notFound().build();
+        return ResponseEntity.noContent().build();
     }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<UserResponse> handleNotFoundException(Exception ex) {
+        return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(Exception ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
+
 }
 
 

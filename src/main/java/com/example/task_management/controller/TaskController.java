@@ -12,11 +12,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/taskManagement/tasks")
@@ -44,9 +47,7 @@ public class TaskController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<TaskResponse> getById(@PathVariable Long id) {
         Task t = taskService.findById(id);
-        return t != null
-                ? ResponseEntity.ok(taskMapper.taskToResponse(t))
-                : ResponseEntity.notFound().build();
+        return ResponseEntity.ok(taskMapper.taskToResponse(t));
     }
 
 
@@ -54,7 +55,7 @@ public class TaskController {
     @ApiResponse(responseCode = "200", description = "Список задач с фильтром")
     @GetMapping("/filter")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> filterBy(@Valid @RequestBody TaskFilterRequest filter) {
+    public ResponseEntity<List<TaskResponse>> filterBy(@Valid @RequestBody TaskFilterRequest filter) {
         return ResponseEntity.ok(taskMapper.taskListToTaskResponseList(taskService.filterBy(filter)));
     }
 
@@ -66,11 +67,9 @@ public class TaskController {
     })
     @PostMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> createTask(@Valid @RequestBody UpsertTaskRequest task) {
+    public ResponseEntity<TaskResponse> createTask(@Valid @RequestBody UpsertTaskRequest task) {
         Task t = taskService.save(taskMapper.requestToTask(task), task);
-        return t != null
-                ? (t.getId() == null ? ResponseEntity.badRequest().body("Task with title " + task.getTitle() + " already exists!") : ResponseEntity.ok(taskMapper.taskToResponse(t)))
-                : ResponseEntity.badRequest().body("Wrong authorId or assigneeId");
+        return ResponseEntity.ok(taskMapper.taskToResponse(t));
     }
 
 
@@ -81,15 +80,9 @@ public class TaskController {
     })
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> updateTask(@Valid @PathVariable Long id, @RequestBody UpsertTaskRequest task) {
+    public ResponseEntity<TaskResponse> updateTask(@Valid @PathVariable Long id, @RequestBody UpsertTaskRequest task) {
         Task t = taskService.update(id, task);
-        return t != null
-                ? (t.getId() != null
-                ? (t.getId().equals(0L)
-                ? ResponseEntity.badRequest().body("Wrong authorId or assigneeId")
-                : ResponseEntity.ok(taskMapper.taskToResponse(t)))
-                : ResponseEntity.badRequest().body("Task with title " + task.getTitle() + " already exists!"))
-                : ResponseEntity.badRequest().body("Task with id " + id + " doesn't exist!");
+        return ResponseEntity.ok(taskMapper.taskToResponse(t));
     }
 
 
@@ -102,9 +95,7 @@ public class TaskController {
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<TaskResponse> addComment(@PathVariable Long id, @RequestBody UpsertPutRequest comment) {
         Task t = taskService.addComment(id, comment.getRequest());
-        return t != null
-                ? ResponseEntity.ok(taskMapper.taskToResponse(t))
-                : ResponseEntity.notFound().build();
+        return ResponseEntity.ok(taskMapper.taskToResponse(t));
     }
 
 
@@ -116,11 +107,9 @@ public class TaskController {
     })
     @PutMapping("/changeStatus/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
-    public ResponseEntity<?> changeStatus(@PathVariable Long id, @RequestBody UpsertPutRequest status) {
+    public ResponseEntity<TaskResponse> changeStatus(@PathVariable Long id, @RequestBody UpsertPutRequest status) {
         Task t = taskService.changeStatus(id, status.getRequest());
-        return t != null
-                ? (t.getId() != null ? ResponseEntity.ok(taskMapper.taskToResponse(t)) : ResponseEntity.badRequest().body("Wrong status"))
-                : ResponseEntity.notFound().build();
+        return ResponseEntity.ok(taskMapper.taskToResponse(t));
     }
 
 
@@ -132,9 +121,17 @@ public class TaskController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
-        return taskService.deleteById(id)
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.notFound().build();
+        return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgument(Exception ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<TaskResponse> handleEntityNotFound(Exception ex) {
+        return ResponseEntity.notFound().build();
     }
 }
 

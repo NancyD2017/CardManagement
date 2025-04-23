@@ -58,7 +58,8 @@ public class SecurityService {
     }
 
     public User register(UpsertUserRequest createUserRequest) {
-        if (userRepository.findByEmail(createUserRequest.getEmail()).isPresent()) return null;
+        if (userRepository.findByEmail(createUserRequest.getEmail()).isPresent())
+            throw new IllegalArgumentException("User with email " + createUserRequest.getEmail() + " already exists!");
         var user = User.builder()
                 .username(createUserRequest.getUsername())
                 .password(passwordEncoder.encode(createUserRequest.getPassword()))
@@ -80,7 +81,7 @@ public class SecurityService {
                     String token = jwtUtils.generateTokenFromUsername(tokenOwner.getUsername());
                     String refreshToken = refreshTokenService.createRefreshToken(tokenOwner.getId()).getToken();
                     return new RefreshTokenResponse(token, refreshToken);
-                }).orElse(null);
+                }).orElseThrow(() -> new IllegalArgumentException("Invalid refresh token"));
 
     }
 
