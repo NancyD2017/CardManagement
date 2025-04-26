@@ -1,0 +1,81 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Anastasia
+      changes:
+        - createTable:
+            tableName: card_holders
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: email
+                  type: varchar(255)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: password
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: credit_cards
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: number
+                  type: varchar(255)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: due_to_date
+                  type: datetime
+              - column:
+                  name: status
+                  type: varchar(50)
+              - column:
+                  name: balance
+                  type: double
+              - column:
+                  name: limit_date
+                  type: datetime
+              - column:
+                  name: credit_limit
+                  type: double
+              - column:
+                  name: remaining_balance
+                  type: double
+              - column:
+                  name: card_holder_id
+                  type: bigint
+                  constraints:
+                    foreignKeyName: fk_card_holder
+                    references: card_holders(id)
+        - createTable:
+            tableName: credit_cards_transaction_history
+            columns:
+              - column:
+                  name: credit_cards_id
+                  type: bigint
+                  constraints:
+                    foreignKeyName: fk_credit_card_transaction
+                    references: credit_cards(id)
+              - column:
+                  name: transaction_history
+                  type: varchar(255)

@@ -1,212 +1,82 @@
-//package com.example.creditCardManagement.controller;
-//
-//import com.example.creditCardManagement.model.entity.CardHolder;
-//import com.example.creditCardManagement.model.entity.Role;
-//import com.example.creditCardManagement.model.request.UpsertCardHolderRequest;
-//import com.example.creditCardManagement.repository.CardHolderRepository;
-//import org.hamcrest.Matchers;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.junit.jupiter.params.ParameterizedTest;
-//import org.junit.jupiter.params.provider.Arguments;
-//import org.junit.jupiter.params.provider.MethodSource;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-//import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.http.MediaType;
-//import org.springframework.test.annotation.DirtiesContext;
-//import org.springframework.test.web.servlet.MockMvc;
-//import org.springframework.test.web.servlet.ResultActions;
-//import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-//import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-//
-//import java.util.Collections;
-//import java.util.HashSet;
-//import java.util.Set;
-//import java.util.stream.Stream;
-//
-//@SpringBootTest
-//@AutoConfigureMockMvc
-//@DirtiesContext
-//public class CardHolderControllerTest {
-//    public static Set<Role> roles = new HashSet<>(Collections.singleton(Role.ROLE_USER));
-//    public static Set<Role> roles2 = new HashSet<>(Collections.singleton(Role.ROLE_ADMIN));
-//
-//    @Autowired
-//    private MockMvc mockMvc;
-//
-//    @Autowired
-//    private CardHolderRepository cardHolderRepository;
-//
-//    static Stream<Arguments> argumentsForCreateUserTest() {
-//        return Stream.of(
-//                Arguments.of(new UpsertCardHolderRequest("Ivan", "vanya@yandex.ru", roles, "1")),
-//                Arguments.of(new UpsertCardHolderRequest("Petr", "petya@yandex.ru", roles2, "2")),
-//                Arguments.of(new UpsertCardHolderRequest("Vasilisa", "vassa@yandex.ru", roles, "3"))
-//        );
-//    }
-//
-//    static Stream<Arguments> argumentsForCreateUserWithWrongParameters() {
-//        return Stream.of(
-//                Arguments.of("""
-//                        {
-//                          "username": "Dmitry",
-//                          "email": "dmitry@yandex.ru",
-//                          "roles": ["ROLE_USER"]
-//                        }
-//                        """, "Missing password"),
-//                Arguments.of("""
-//                        {
-//                          "username": "Dmitry",
-//                          "email": "invalid-email",
-//                          "roles": ["ROLE_USER"],
-//                          "password": "1"
-//                        }
-//                        """, "Invalid email"),
-//                Arguments.of("""
-//                        {
-//                          "username": "Dmitry",
-//                          "email": "dmitry@yandex.ru",
-//                          "password": "1"
-//                        }
-//                        """, "Missing roles")
-//        );
-//    }
-//
-//    @BeforeEach
-//    void deleteAll() {
-//        cardHolderRepository.deleteAll();
-//    }
-//
-//    @ParameterizedTest
-//    @MethodSource("argumentsForCreateUserTest")
-//    void createUserQuery(UpsertCardHolderRequest dto) throws Exception {
-//        ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.post("/taskManagement/users")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content("""
-//                        {
-//                          "username": "%s",
-//                          "email": "%s",
-//                          "password": "%s",
-//                          "roles": ["%s"]
-//                        }
-//                        """.formatted(dto.getUsername(), dto.getEmail(), dto.getPassword(), dto.getRoles().iterator().next().name())));
-//
-//        actions.andExpect(MockMvcResultMatchers.status().isOk())
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.notNullValue()))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.username", Matchers.is(dto.getUsername())))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.email", Matchers.is(dto.getEmail())))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.roles", Matchers.contains(dto.getRoles().iterator().next().name())))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.password").doesNotExist());
-//    }
-//
-//    @ParameterizedTest
-//    @MethodSource("argumentsForCreateUserWithWrongParameters")
-//    void createUserWithWrongParameters(String requestBody, String testCase) throws Exception {
-//        if (testCase.equals("Duplicate email")) {
-//            cardHolderRepository.save(new CardHolder(null, "ExistingUser", "dmitry@yandex.ru", "1", null, roles));
-//        }
-//
-//        ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.post("/taskManagement/users")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(requestBody));
-//
-//        actions.andExpect(MockMvcResultMatchers.status().isBadRequest());
-//        ResultActions actions2 = mockMvc.perform(MockMvcRequestBuilders.post("/taskManagement/users")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content("""
-//                        {
-//                          "username": "Dmitry",
-//                          "email": "dmitry@yandex.ru",
-//                          "roles": ["ROLE_USER"],
-//                          "password": "1"
-//                        }
-//                        """));
-//        actions2.andExpect(MockMvcResultMatchers.status().isOk());
-//        ResultActions actions3 = mockMvc.perform(MockMvcRequestBuilders.post("/taskManagement/users")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content("""
-//                        {
-//                          "username": "Dmitry",
-//                          "email": "dmitry@yandex.ru",
-//                          "roles": ["ROLE_USER"],
-//                          "password": "1"
-//                        }
-//                        """));
-//        actions3.andExpect(MockMvcResultMatchers.status().isBadRequest());
-//        ResultActions actions4 = mockMvc.perform(MockMvcRequestBuilders.post("/taskManagement/users")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content("""
-//                        {
-//                          "username": "Ekaterina",
-//                          "email": "Ekaterina@yandex.ru",
-//                          "roles": ["ROLE_USER"]
-//                        }
-//                        """));
-//
-//        actions4.andExpect(MockMvcResultMatchers.status().isBadRequest());
-//    }
-//
-//    @Test
-//    void findByIdMethodTest() throws Exception {
-//        CardHolder cardHolder = new CardHolder(null, "Anna", "anna@gmail.com", "1", null, roles2);
-//        cardHolder = cardHolderRepository.save(cardHolder);
-//        Long userId = cardHolder.getId();
-//
-//        ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.get("/taskManagement/users/" + userId));
-//
-//        actions.andExpect(MockMvcResultMatchers.status().isOk())
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(userId.intValue())))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.username", Matchers.is("Anna")))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.email", Matchers.is("anna@gmail.com")))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.roles", Matchers.contains(Role.ROLE_ADMIN.name())))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.password").doesNotExist());
-//    }
-//
-//    @Test
-//    void findByIdMethodWithoutExistUser() throws Exception {
-//        ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.get("/taskManagement/users/999"));
-//
-//        actions.andExpect(MockMvcResultMatchers.status().isNotFound());
-//    }
-//
-//    @Test
-//    void findAllUsers() throws Exception {
-//        cardHolderRepository.save(new CardHolder(null, "Nicolay", "nicolay@gmail.com", "1", null, roles));
-//        cardHolderRepository.save(new CardHolder(null, "Svetlana", "svetlana@gmail.com", "1", null, roles2));
-//
-//        ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.get("/taskManagement/users"));
-//
-//        actions.andExpect(MockMvcResultMatchers.status().isOk())
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.users", Matchers.hasSize(2)))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.users[0].username", Matchers.is("Nicolay")))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.users[0].email", Matchers.is("nicolay@gmail.com")))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.users[0].roles", Matchers.contains(Role.ROLE_USER.name())))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.users[0].password").doesNotExist())
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.users[1].username", Matchers.is("Svetlana")))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.users[1].email", Matchers.is("svetlana@gmail.com")))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.users[1].roles", Matchers.contains(Role.ROLE_ADMIN.name())))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.users[1].password").doesNotExist());
-//    }
-//
-//    @Test
-//    void deleteUserById() throws Exception {
-//        CardHolder cardHolder = new CardHolder(null, "Ilya", "ilya@gmail.com", "1", null, roles);
-//        cardHolder = cardHolderRepository.save(cardHolder);
-//        Long userId = cardHolder.getId();
-//
-//        ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.delete("/taskManagement/users/" + userId));
-//
-//        actions.andExpect(MockMvcResultMatchers.status().isNoContent());
-//
-//        ResultActions findAfterDelete = mockMvc.perform(MockMvcRequestBuilders.get("/taskManagement/users/" + userId));
-//        findAfterDelete.andExpect(MockMvcResultMatchers.status().isNotFound());
-//    }
-//
-//    @Test
-//    void deleteUserByIdWithoutExistUser() throws Exception {
-//        ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.delete("/taskManagement/users/999"));
-//
-//        actions.andExpect(MockMvcResultMatchers.status().isNotFound());
-//    }
-//}
+package com.example.creditCardManagement.controller;
+
+import com.example.creditCardManagement.model.entity.CardHolder;
+import com.example.creditCardManagement.repository.CardHolderRepository;
+import com.example.creditCardManagement.service.CardHolderService;
+import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class CardHolderControllerTest {
+    @Mock
+    private CardHolderRepository cardHolderRepository;
+    @InjectMocks
+    private CardHolderService cardHolderService;
+
+    private CardHolder cardHolder;
+
+    @BeforeEach
+    void setUp() {
+        cardHolder = new CardHolder();
+        cardHolder.setId(1L);
+        cardHolder.setEmail("test@example.com");
+    }
+
+    @Test
+    void findAll_success() {
+        when(cardHolderRepository.findAll()).thenReturn(List.of(cardHolder));
+
+        List<CardHolder> result = cardHolderService.findAll();
+
+        assertEquals(1, result.size());
+        assertEquals(cardHolder, result.get(0));
+        verify(cardHolderRepository).findAll();
+    }
+
+    @Test
+    void findById_success() {
+        when(cardHolderRepository.findById(1L)).thenReturn(Optional.of(cardHolder));
+
+        CardHolder result = cardHolderService.findById(1L);
+
+        assertEquals(cardHolder, result);
+        verify(cardHolderRepository).findById(1L);
+    }
+
+    @Test
+    void findById_notFound_throwsEntityNotFoundException() {
+        when(cardHolderRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> cardHolderService.findById(1L));
+        verify(cardHolderRepository).findById(1L);
+    }
+
+    @Test
+    void deleteById_success() {
+        when(cardHolderRepository.existsById(1L)).thenReturn(true);
+
+        cardHolderService.deleteById(1L);
+
+        verify(cardHolderRepository).deleteById(1L);
+    }
+
+    @Test
+    void deleteById_notFound_throwsEntityNotFoundException() {
+        when(cardHolderRepository.existsById(1L)).thenReturn(false);
+
+        assertThrows(EntityNotFoundException.class, () -> cardHolderService.deleteById(1L));
+        verify(cardHolderRepository, never()).deleteById(anyLong());
+    }
+}

@@ -9,14 +9,12 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     show-sql: true
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
   main:
     allow-circular-references: true
-  jackson:
-    serialization:
-      write-dates-as-timestamps: false
-    date-format: yyyy-MM-dd'T'00:00:00
 logging:
   level:
     org:
@@ -26,6 +24,8 @@ app:
     secret: ${JWT_SECRET:SomeSecretKeyoidhujh9jkoi9ydhuj534nh89jjnhs7xvjmhziklogjmmskmrpojksgns8ejHUYhfnnbythbfhjz7lUHNN89f79gin58ujmgnbn}
     tokenExpiration: ${JWT_TOKEN_EXPIRATION:300m}
     refreshTokenExpiration: ${JWT_REFRESH_TOKEN_EXPIRATION:30m}
+  encryption:
+    secret-key: ${ENCRYPTION_SECRET_KEY:SomeSecretKeyoidhujh9jkoi9ydhuj534nh89jjnhs7xvjmhziklogjmmskmrpojksgns8ejHUYhfnnbythbfhjz7lUHNN89f79gin58ujmgnbn}
 springdoc:
   api-docs:
     path: /v3/api-docs

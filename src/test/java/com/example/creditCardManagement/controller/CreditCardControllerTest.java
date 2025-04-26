@@ -1,526 +1,480 @@
-//package com.example.creditCardManagement.controller;
-//
-//import com.example.creditCardManagement.model.entity.*;
-//import com.example.creditCardManagement.model.request.UpsertCreditCardRequest;
-//import com.example.creditCardManagement.repository.CreditCardRepository;
-//import com.example.creditCardManagement.repository.CardHolderRepository;
-//import org.hamcrest.Matchers;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.junit.jupiter.params.ParameterizedTest;
-//import org.junit.jupiter.params.provider.Arguments;
-//import org.junit.jupiter.params.provider.MethodSource;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-//import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.http.MediaType;
-//import org.springframework.security.test.context.support.WithMockUser;
-//import org.springframework.test.annotation.DirtiesContext;
-//import org.springframework.test.web.servlet.MockMvc;
-//import org.springframework.test.web.servlet.ResultActions;
-//import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-//import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-//
-//import java.util.Collections;
-//import java.util.HashSet;
-//import java.util.Set;
-//import java.util.stream.Stream;
-//
-//
-//@SpringBootTest
-//@AutoConfigureMockMvc
-//@DirtiesContext
-//public class CreditCardControllerTest {
-//    public static Set<Role> role = new HashSet<>(Collections.singleton(Role.ROLE_USER));
-//    public static Set<Role> role2 = new HashSet<>(Collections.singleton(Role.ROLE_ADMIN));
-//
-//    @Autowired
-//    private MockMvc mockMvc;
-//    @Autowired
-//    private CreditCardRepository creditCardRepository;
-//    @Autowired
-//    private CardHolderRepository cardHolderRepository;
-//
-//    static Stream<Arguments> argumentsForCreateTaskTest() {
-//        return Stream.of(
-//                Arguments.of(new UpsertCreditCardRequest("Do the washing up", "swipe off the dust", CardStatus.TO_DO, Priority.LOW, 1L, 1L)),
-//                Arguments.of(new UpsertCreditCardRequest("Feed the cat", "use a bowl", CardStatus.IN_PROGRESS, Priority.HIGH, 1L, 1L)),
-//                Arguments.of(new UpsertCreditCardRequest("Buy products", "take a purse", CardStatus.DONE, Priority.MIDDLE, 1L, 1L))
-//        );
-//    }
-//
-//    @BeforeEach
-//    void deleteAll() {
-//        cardHolderRepository.deleteAll();
-//        creditCardRepository.deleteAll();
-//    }
-//
-//    @Test
-//    @WithMockUser(roles = "ADMIN")
-//    void findAllTasksAdmin() throws Exception {
-//        findAllTasksMethod(200);
-//    }
-//
-//    @Test
-//    @WithMockUser(roles = "USER")
-//    void findAllTasksUser() throws Exception {
-//        findAllTasksMethod(403);
-//    }
-//
-//    void findAllTasksMethod(int status) throws Exception {
-//        CardHolder u = new CardHolder(1L, "Anastasia", "anastasia@gmail.com", "1", null, role2);
-//        u = cardHolderRepository.save(u);
-//        creditCardRepository.save(new CreditCard(1L, "Do the laundry", "use the washing machine", CardStatus.TO_DO, Priority.MIDDLE, u, u, null));
-//        creditCardRepository.save(new CreditCard(2L, "Mop the floor", "use the floor mop", CardStatus.DONE, Priority.HIGH, u, u, null));
-//
-//        ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.get("/taskManagement/tasks"));
-//
-//        actions.andExpect(MockMvcResultMatchers.status().is(status));
-//        if (status != 403) {
-//            actions.andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.notNullValue()));
-//        }
-//    }
-//
-//    @Test
-//    @WithMockUser(roles = "ADMIN")
-//    void findTaskAdmin() throws Exception {
-//        findTaskMethod(200);
-//    }
-//
-//    @Test
-//    @WithMockUser(roles = "USER")
-//    void findTaskUser() throws Exception {
-//        findTaskMethod(403);
-//    }
-//
-//    @Test
-//    @WithMockUser(roles = "ADMIN")
-//    void findTaskWithWrongIdAdmin() throws Exception {
-//        findTaskMethod(404);
-//    }
-//
-//    void findTaskMethod(int status) throws Exception {
-//        CardHolder u = new CardHolder(1L, "Anastasia", "anastasia@gmail.com", "1", null, role2);
-//        u = cardHolderRepository.save(u);
-//        creditCardRepository.save(new CreditCard(1L, "Do the laundry", "use the washing machine", CardStatus.TO_DO, Priority.MIDDLE, u, u, null));
-//        creditCardRepository.save(new CreditCard(2L, "Mop the floor", "use the floor mop", CardStatus.DONE, Priority.HIGH, u, u, null));
-//
-//        ResultActions actions = status != 404
-//                ? mockMvc.perform(MockMvcRequestBuilders.get("/taskManagement/tasks/" + creditCardRepository.findByTitle("Do the laundry").get().getId()))
-//                : mockMvc.perform(MockMvcRequestBuilders.get("/taskManagement/tasks/1"));
-//
-//        actions.andExpect(MockMvcResultMatchers.status().is(status));
-//        if (status == 200) {
-//            actions.andExpect(MockMvcResultMatchers.jsonPath("$.title", Matchers.is("Do the laundry")))
-//                    .andExpect(MockMvcResultMatchers.jsonPath("$.description", Matchers.is("use the washing machine")))
-//                    .andExpect(MockMvcResultMatchers.jsonPath("$.priority", Matchers.is(Priority.MIDDLE.toString())))
-//                    .andExpect(MockMvcResultMatchers.jsonPath("$.status", Matchers.is(CardStatus.TO_DO.toString())))
-//                    .andExpect(MockMvcResultMatchers.jsonPath("$.author.email", Matchers.is("anastasia@gmail.com")))
-//                    .andExpect(MockMvcResultMatchers.jsonPath("$.assignee.email", Matchers.is("anastasia@gmail.com")));
-//        }
-//    }
-//
-//    @Test
-//    @WithMockUser(roles = "ADMIN")
-//    void findTaskFilterAdmin() throws Exception {
-//        findTaskFilterMethod(200, true);
-//    }
-//
-//    @Test
-//    @WithMockUser(roles = "USER")
-//    void findTaskFilterUser() throws Exception {
-//        findTaskFilterMethod(403, false);
-//    }
-//
-//    @Test
-//    @WithMockUser(roles = "ADMIN")
-//    void findTaskFilterWithWrongIdAdmin() throws Exception {
-//        findTaskFilterMethod(200, false);
-//    }
-//
-//    void findTaskFilterMethod(int status, boolean checkPaths) throws Exception {
-//        CardHolder u = new CardHolder(1L, "Anastasia", "anastasia@gmail.com", "1", null, role2);
-//        u = cardHolderRepository.save(u);
-//        creditCardRepository.save(new CreditCard(1L, "Do the laundry", "use the washing machine", CardStatus.TO_DO, Priority.MIDDLE, u, u, null));
-//        creditCardRepository.save(new CreditCard(2L, "Mop the floor", "use the floor mop", CardStatus.DONE, Priority.HIGH, u, u, null));
-//
-//        Long id = cardHolderRepository.findByEmail("anastasia@gmail.com").get().getId();
-//        ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.get("/taskManagement/tasks/filter")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content("""
-//                        {
-//                          "pageSize": 10,
-//                          "pageNumber": 0,
-//                          "authorId": "%d",
-//                          "assigneeId": "%d"
-//                        }
-//                        """.formatted(id, id)));
-//
-//        actions.andExpect(MockMvcResultMatchers.status().is(status));
-//        if (checkPaths) {
-//            actions.andExpect(MockMvcResultMatchers.jsonPath("$[0].title", Matchers.is("Do the laundry")))
-//                    .andExpect(MockMvcResultMatchers.jsonPath("$[0].description", Matchers.is("use the washing machine")))
-//                    .andExpect(MockMvcResultMatchers.jsonPath("$[0].priority", Matchers.is(Priority.MIDDLE.toString())))
-//                    .andExpect(MockMvcResultMatchers.jsonPath("$[0].status", Matchers.is(CardStatus.TO_DO.toString())))
-//                    .andExpect(MockMvcResultMatchers.jsonPath("$[0].author.email", Matchers.is("anastasia@gmail.com")))
-//                    .andExpect(MockMvcResultMatchers.jsonPath("$[0].assignee.email", Matchers.is("anastasia@gmail.com")))
-//                    .andExpect(MockMvcResultMatchers.jsonPath("$[1].title", Matchers.is("Mop the floor")))
-//                    .andExpect(MockMvcResultMatchers.jsonPath("$[1].description", Matchers.is("use the floor mop")))
-//                    .andExpect(MockMvcResultMatchers.jsonPath("$[1].priority", Matchers.is(Priority.HIGH.toString())))
-//                    .andExpect(MockMvcResultMatchers.jsonPath("$[1].status", Matchers.is(CardStatus.DONE.toString())))
-//                    .andExpect(MockMvcResultMatchers.jsonPath("$[1].author.email", Matchers.is("anastasia@gmail.com")))
-//                    .andExpect(MockMvcResultMatchers.jsonPath("$[1].assignee.email", Matchers.is("anastasia@gmail.com")));
-//        }
-//    }
-//
-//    @ParameterizedTest
-//    @MethodSource("argumentsForCreateTaskTest")
-//    @WithMockUser(roles = "ADMIN")
-//    void createTaskQueryAdmin(UpsertCreditCardRequest dto) throws Exception {
-//        createMethod(dto, 200);
-//    }
-//
-//    @ParameterizedTest
-//    @MethodSource("argumentsForCreateTaskTest")
-//    @WithMockUser(roles = "USER")
-//    void createTaskQueryUser(UpsertCreditCardRequest dto) throws Exception {
-//        createMethod(dto, 403);
-//    }
-//
-//    void createMethod(UpsertCreditCardRequest dto, int status) throws Exception {
-//        cardHolderRepository.save(new CardHolder(1L, "Anastasia", "anastasia@gmail.com", "1", null, role2));
-//        ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.post("/taskManagement/tasks")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content("""
-//                        {
-//                          "title": "%s",
-//                          "description": "%s",
-//                          "status": "%s",
-//                          "priority": "%s",
-//                          "authorId": "%d",
-//                          "assigneeId": "%d"
-//                        }
-//                        """.formatted(dto.getTitle(), dto.getDescription(), dto.getStatus(), dto.getPriority(), cardHolderRepository.findByEmail("anastasia@gmail.com").get().getId(), cardHolderRepository.findByEmail("anastasia@gmail.com").get().getId())));
-//
-//        actions.andExpect(MockMvcResultMatchers.status().is(status));
-//        if (status != 403) {
-//            actions.andExpect(MockMvcResultMatchers.jsonPath("$.title", Matchers.is(dto.getTitle())))
-//                    .andExpect(MockMvcResultMatchers.jsonPath("$.description", Matchers.is(dto.getDescription())))
-//                    .andExpect(MockMvcResultMatchers.jsonPath("$.priority", Matchers.is(dto.getPriority().toString())))
-//                    .andExpect(MockMvcResultMatchers.jsonPath("$.status", Matchers.is(dto.getStatus().toString())))
-//                    .andExpect(MockMvcResultMatchers.jsonPath("$.author.email", Matchers.is("anastasia@gmail.com")))
-//                    .andExpect(MockMvcResultMatchers.jsonPath("$.assignee.email", Matchers.is("anastasia@gmail.com")));
-//        }
-//    }
-//
-//    @Test
-//    @WithMockUser(roles = "ADMIN")
-//    void createTaskWithWrongParameters() throws Exception {
-//        cardHolderRepository.save(new CardHolder(1L, "Anastasia", "anastasia@gmail.com", "1", null, role2));
-//        ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.post("/taskManagement/tasks")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content("""
-//                        {
-//                          "description": "Wash the dishes",
-//                          "status": "TO_DO",
-//                          "priority": "LOW",
-//                          "authorId": "%d",
-//                          "assigneeId": "%d"
-//                        }
-//                        """.formatted(cardHolderRepository.findByEmail("anastasia@gmail.com").get().getId(), cardHolderRepository.findByEmail("anastasia@gmail.com").get().getId())));
-//
-//        actions.andExpect(MockMvcResultMatchers.status().isBadRequest());
-//        ResultActions actions2 = mockMvc.perform(MockMvcRequestBuilders.post("/taskManagement/tasks")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content("""
-//                        {
-//                          "title": "Wash bowls",
-//                          "description": "Wash the dishes",
-//                          "status": "TO_DO",
-//                          "priority": "LOW",
-//                          "authorId": "%d"
-//                        }
-//                        """.formatted(cardHolderRepository.findByEmail("anastasia@gmail.com").get().getId())));
-//        actions2.andExpect(MockMvcResultMatchers.status().isBadRequest());
-//        ResultActions actions3 = mockMvc.perform(MockMvcRequestBuilders.post("/taskManagement/tasks")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content("""
-//                        {
-//                          "title": "Wash bowls",
-//                          "description": "Wash the dishes",
-//                          "status": "TO_DO",
-//                          "priority": "LOW",
-//                          "assigneeId": "%d"
-//                        }
-//                        """));
-//
-//        actions3.andExpect(MockMvcResultMatchers.status().isBadRequest());
-//    }
-//
-//    @Test
-//    @WithMockUser(roles = "ADMIN")
-//    void updateTaskAdmin() throws Exception {
-//        updateTaskMethod(200, true);
-//    }
-//
-//    @Test
-//    @WithMockUser(roles = "USER")
-//    void updateTaskUser() throws Exception {
-//        updateTaskMethod(403, false);
-//    }
-//
-//    void updateTaskMethod(int status, boolean checkPaths) throws Exception {
-//        CardHolder u = new CardHolder(1L, "Anastasia", "anastasia@gmail.com", "1", null, role2);
-//        u = cardHolderRepository.save(u);
-//        Long userId = cardHolderRepository.findByEmail("anastasia@gmail.com").get().getId();
-//        CreditCard t = new CreditCard(1L, "Do the laundry", "use the washing machine", CardStatus.TO_DO, Priority.MIDDLE, u, u, null);
-//        t = creditCardRepository.save(t);
-//
-//        ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.put("/taskManagement/tasks/" + t.getId())
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content("""
-//                        {
-//                          "title": "Updated Task",
-//                          "description": "updated description",
-//                          "status": "IN_PROGRESS",
-//                          "priority": "HIGH",
-//                          "authorId": "%d",
-//                          "assigneeId": "%d"
-//                        }
-//                        """.formatted(userId, userId)));
-//
-//        actions.andExpect(MockMvcResultMatchers.status().is(status));
-//        if (checkPaths) {
-//            actions.andExpect(MockMvcResultMatchers.jsonPath("$.title", Matchers.is("Updated Task")))
-//                    .andExpect(MockMvcResultMatchers.jsonPath("$.description", Matchers.is("updated description")))
-//                    .andExpect(MockMvcResultMatchers.jsonPath("$.status", Matchers.is(CardStatus.IN_PROGRESS.toString())))
-//                    .andExpect(MockMvcResultMatchers.jsonPath("$.priority", Matchers.is(Priority.HIGH.toString())))
-//                    .andExpect(MockMvcResultMatchers.jsonPath("$.author.email", Matchers.is("anastasia@gmail.com")))
-//                    .andExpect(MockMvcResultMatchers.jsonPath("$.assignee.email", Matchers.is("anastasia@gmail.com")));
-//        }
-//    }
-//
-//    @Test
-//    @WithMockUser(roles = "ADMIN")
-//    void updateTaskWithWrongDataAdmin() throws Exception {
-//        CardHolder u = new CardHolder(1L, "Anastasia", "anastasia@gmail.com", "1", null, role2);
-//        u = cardHolderRepository.save(u);
-//        Long userId = cardHolderRepository.findByEmail("anastasia@gmail.com").get().getId();
-//        CreditCard t = creditCardRepository.save(new CreditCard(1L, "Do the laundry", "use the washing machine", CardStatus.TO_DO, Priority.MIDDLE, u, u, null));
-//        creditCardRepository.save(new CreditCard(2L, "Mop the floor", "use the floor mop", CardStatus.DONE, Priority.HIGH, u, u, null));
-//
-//        ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.put("/taskManagement/tasks/" + t.getId())
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content("""
-//                        {
-//                          "title": "Updated Task",
-//                          "description": "updated description",
-//                          "status": "IN_PROGRESS",
-//                          "priority": "HIGH",
-//                          "authorId": "999",
-//                          "assigneeId": "%d"
-//                        }
-//                        """.formatted(userId)));
-//        actions.andExpect(MockMvcResultMatchers.status().is(400));
-//
-//        ResultActions actions2 = mockMvc.perform(MockMvcRequestBuilders.put("/taskManagement/tasks/0")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content("""
-//                        {
-//                          "title": "Mop the floor",
-//                          "description": "updated description",
-//                          "status": "IN_PROGRESS",
-//                          "priority": "HIGH",
-//                          "authorId": "%d",
-//                          "assigneeId": "%d"
-//                        }
-//                        """.formatted(userId, userId)));
-//        actions2.andExpect(MockMvcResultMatchers.status().is(400));
-//        creditCardRepository.findAll().forEach(ta -> System.out.println(ta.getTitle() + "!"));
-//
-//        ResultActions actions3 = mockMvc.perform(MockMvcRequestBuilders.put("/taskManagement/tasks/" + t.getId())
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content("""
-//                        {
-//                          "title": "Mop the floor",
-//                          "description": "updated description",
-//                          "status": "IN_PROGRESS",
-//                          "priority": "HIGH",
-//                          "authorId": "%d",
-//                          "assigneeId": "%d"
-//                        }
-//                        """.formatted(userId, userId)));
-//        actions3.andExpect(MockMvcResultMatchers.status().is(400));
-//    }
-//
-//
-//    @Test
-//    @WithMockUser(roles = "ADMIN")
-//    void addCommentAdmin() throws Exception {
-//        addCommentMethod();
-//    }
-//
-//    @Test
-//    @WithMockUser(roles = "USER")
-//    void addCommentUser() throws Exception {
-//        addCommentMethod();
-//    }
-//
-//    void addCommentMethod() {
-//        CardHolder u = new CardHolder(1L, "Anastasia", "anastasia@gmail.com", "1", null, role2);
-//        u = cardHolderRepository.save(u);
-//        creditCardRepository.save(new CreditCard(1L, "Do the laundry", "use the washing machine", CardStatus.TO_DO, Priority.MIDDLE, u, u, null));
-//
-//        Long taskId = creditCardRepository.findByTitle("Do the laundry").get().getId();
-//        try {
-//            ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.put("/taskManagement/tasks/blockCreditCard/" + taskId)
-//                    .contentType(MediaType.APPLICATION_JSON)
-//                    .content("""
-//                            {
-//                              "request": "Some comment"
-//                            }
-//                            """));
-//
-//            actions.andExpect(MockMvcResultMatchers.status().is(200))
-//                    .andExpect(MockMvcResultMatchers.jsonPath("$.comment", Matchers.is("Some comment")));
-//        } catch (Exception e) {
-//            System.out.println("There was a problem trying to check id in CardAccessAspect class");
-//        }
-//    }
-//
-//    @Test
-//    @WithMockUser(roles = "ADMIN")
-//    void addCommentWithWrongIdAdmin() throws Exception {
-//        CardHolder u = new CardHolder(1L, "Anastasia", "anastasia@gmail.com", "1", null, role2);
-//        u = cardHolderRepository.save(u);
-//        creditCardRepository.save(new CreditCard(1L, "Do the laundry", "use the washing machine", CardStatus.TO_DO, Priority.MIDDLE, u, u, null));
-//        try {
-//            ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.put("/taskManagement/tasks/changeStatus/999")
-//                    .contentType(MediaType.APPLICATION_JSON)
-//                    .content("""
-//                            {
-//                              "request": "IN_PROGRESS"
-//                            }
-//                            """));
-//
-//            actions.andExpect(MockMvcResultMatchers.status().is(404));
-//        } catch (Exception e) {
-//            System.out.println("There was a problem trying to check id in CardAccessAspect class");
-//        }
-//    }
-//
-//    @Test
-//    @WithMockUser(roles = "ADMIN")
-//    void changeStatusAdmin() throws Exception {
-//        changeStatusMethod(200);
-//    }
-//
-//    @Test
-//    @WithMockUser(roles = "USER")
-//    void changeStatusUser() throws Exception {
-//        changeStatusMethod(200);
-//    }
-//
-//    void changeStatusMethod(int status) throws Exception {
-//        CardHolder u = new CardHolder(1L, "Anastasia", "anastasia@gmail.com", "1", null, role2);
-//        u = cardHolderRepository.save(u);
-//        creditCardRepository.save(new CreditCard(1L, "Do the laundry", "use the washing machine", CardStatus.TO_DO, Priority.MIDDLE, u, u, null));
-//
-//        Long taskId = creditCardRepository.findByTitle("Do the laundry").get().getId();
-//        try {
-//            ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.put("/taskManagement/tasks/changeStatus/" + taskId)
-//                    .contentType(MediaType.APPLICATION_JSON)
-//                    .content("""
-//                            {
-//                              "request": "IN_PROGRESS"
-//                            }
-//                            """));
-//
-//            actions.andExpect(MockMvcResultMatchers.status().is(status));
-//            if (status == 200) {
-//                actions.andExpect(MockMvcResultMatchers.jsonPath("$.status", Matchers.is(CardStatus.IN_PROGRESS.toString())));
-//            }
-//        } catch (Exception e) {
-//            System.out.println("There was a problem trying to check id in CardAccessAspect class");
-//        }
-//    }
-//
-//    @Test
-//    @WithMockUser(roles = "ADMIN")
-//    void changeStatusWithWrongDataAdmin() throws Exception {
-//        CardHolder u = new CardHolder(1L, "Anastasia", "anastasia@gmail.com", "1", null, role2);
-//        u = cardHolderRepository.save(u);
-//        creditCardRepository.save(new CreditCard(1L, "Do the laundry", "use the washing machine", CardStatus.TO_DO, Priority.MIDDLE, u, u, null));
-//
-//        Long taskId = creditCardRepository.findByTitle("Do the laundry").get().getId();
-//        try {
-//            ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.put("/taskManagement/tasks/changeStatus/" + taskId)
-//                    .contentType(MediaType.APPLICATION_JSON)
-//                    .content("""
-//                            {
-//                              "request": "INVALID_STATUS"
-//                            }
-//                            """));
-//
-//            actions.andExpect(MockMvcResultMatchers.status().is(400));
-//        } catch (Exception e) {
-//            System.out.println("There was a problem trying to check id in CardAccessAspect class");
-//        }
-//    }
-//
-//    @Test
-//    @WithMockUser(roles = "ADMIN")
-//    void changeStatusWithWrongIdAdmin() throws Exception {
-//        CardHolder u = new CardHolder(1L, "Anastasia", "anastasia@gmail.com", "1", null, role2);
-//        u = cardHolderRepository.save(u);
-//        creditCardRepository.save(new CreditCard(1L, "Do the laundry", "use the washing machine", CardStatus.TO_DO, Priority.MIDDLE, u, u, null));
-//        try {
-//            ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.put("/taskManagement/tasks/changeStatus/999")
-//                    .contentType(MediaType.APPLICATION_JSON)
-//                    .content("""
-//                            {
-//                              "request": "IN_PROGRESS"
-//                            }
-//                            """));
-//
-//            actions.andExpect(MockMvcResultMatchers.status().is(404));
-//        } catch (Exception e) {
-//            System.out.println("There was a problem trying to check id in CardAccessAspect class");
-//        }
-//    }
-//
-//    @Test
-//    @WithMockUser(roles = "ADMIN")
-//    void deleteTaskAdmin() throws Exception {
-//        deleteTaskMethod(204);
-//    }
-//
-//    @Test
-//    @WithMockUser(roles = "USER")
-//    void deleteTaskUser() throws Exception {
-//        deleteTaskMethod(403);
-//    }
-//
-//    @Test
-//    @WithMockUser(roles = "ADMIN")
-//    void deleteTaskWithWrongIdAdmin() throws Exception {
-//        CardHolder u = cardHolderRepository.save(new CardHolder(1L, "Anastasia", "anastasia@gmail.com", "1", null, role2));
-//        creditCardRepository.save(new CreditCard(1L, "Do the laundry", "use the washing machine", CardStatus.TO_DO, Priority.MIDDLE, u, u, null));
-//
-//        ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.delete("/taskManagement/tasks/999"));
-//
-//        actions.andExpect(MockMvcResultMatchers.status().is(404));
-//    }
-//
-//    void deleteTaskMethod(int status) throws Exception {
-//        CardHolder u = new CardHolder(1L, "Anastasia", "anastasia@gmail.com", "1", null, role2);
-//        u = cardHolderRepository.save(u);
-//        creditCardRepository.save(new CreditCard(1L, "Do the laundry", "use the washing machine", CardStatus.TO_DO, Priority.MIDDLE, u, u, null));
-//
-//        Long taskId = creditCardRepository.findByTitle("Do the laundry").get().getId();
-//        ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.delete("/taskManagement/tasks/" + taskId));
-//
-//        actions.andExpect(MockMvcResultMatchers.status().is(status));
-//    }
-//
-//}
+package com.example.creditCardManagement.controller;
+
+import com.example.creditCardManagement.model.entity.CardHolder;
+import com.example.creditCardManagement.model.entity.CardStatus;
+import com.example.creditCardManagement.model.entity.CreditCard;
+import com.example.creditCardManagement.model.entity.LimitDuration;
+import com.example.creditCardManagement.model.request.CreditCardFilterRequest;
+import com.example.creditCardManagement.model.request.UpsertCreditCardRequest;
+import com.example.creditCardManagement.repository.CardHolderRepository;
+import com.example.creditCardManagement.repository.CreditCardRepository;
+import com.example.creditCardManagement.security.AppUserDetails;
+import com.example.creditCardManagement.service.CreditCardService;
+import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class CreditCardControllerTest {
+    @Mock
+    private CreditCardRepository creditCardRepository;
+    @Mock
+    private CardHolderRepository cardHolderRepository;
+    @Mock
+    private SecurityContext securityContext;
+    @Mock
+    private Authentication authentication;
+    @Mock
+    private AppUserDetails userDetails;
+    @InjectMocks
+    private CreditCardService creditCardService;
+
+    private CardHolder cardHolder;
+    private CreditCard creditCard;
+    private UpsertCreditCardRequest request;
+
+    @BeforeEach
+    void setUp() {
+        cardHolder = new CardHolder();
+        cardHolder.setId(1L);
+        creditCard = new CreditCard();
+        creditCard.setId(1L);
+        creditCard.setNumber(123456789L);
+        creditCard.setCardHolder(cardHolder);
+        creditCard.setBalance(1000.0);
+        creditCard.setStatus(CardStatus.ACTIVE);
+        creditCard.setDueToDate(LocalDate.now().plusYears(4).atStartOfDay());
+        request = new UpsertCreditCardRequest();
+        request.setCardHolderId(1L);
+        request.setNumber(123456789L);
+        request.setBalance(1000.0);
+    }
+
+    @Test
+    void filterBy_success() {
+        CreditCardFilterRequest filter = new CreditCardFilterRequest();
+        filter.setCardHolderId(1L);
+        filter.setPageNumber(0);
+        filter.setPageSize(10);
+        Page<CreditCard> page = new PageImpl<>(List.of(creditCard), PageRequest.of(0, 10), 1);
+        when(creditCardRepository.findAllBySpecification(any(Specification.class), any(PageRequest.class))).thenReturn(page);
+
+        Page<CreditCard> result = creditCardService.filterBy(filter);
+
+        assertEquals(1, result.getContent().size());
+        assertEquals(creditCard, result.getContent().get(0));
+        assertEquals(0, result.getNumber());
+        assertEquals(10, result.getSize());
+        assertEquals(1, result.getTotalElements());
+        verify(creditCardRepository).findAllBySpecification(any(Specification.class), any(PageRequest.class));
+    }
+
+    @Test
+    void findAllByCardHolder_success() {
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+        when(userDetails.getId()).thenReturn(1L);
+        SecurityContextHolder.setContext(securityContext);
+        when(creditCardRepository.findByCardHolderId(1L)).thenReturn(List.of(creditCard));
+
+        List<CreditCard> result = creditCardService.findAllByCardHolder();
+
+        assertEquals(1, result.size());
+        assertEquals(creditCard, result.get(0));
+        verify(creditCardRepository).findByCardHolderId(1L);
+    }
+
+    @Test
+    void findAllByCardHolder_unauthenticated_throwsIllegalStateException() {
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(null);
+        SecurityContextHolder.setContext(securityContext);
+
+        assertThrows(IllegalStateException.class, () -> creditCardService.findAllByCardHolder());
+        verify(creditCardRepository, never()).findByCardHolderId(anyLong());
+    }
+
+    @Test
+    void save_success() {
+        when(creditCardRepository.findByNumber(123456789L)).thenReturn(Optional.empty());
+        when(cardHolderRepository.findById(1L)).thenReturn(Optional.of(cardHolder));
+        when(creditCardRepository.save(any(CreditCard.class))).thenReturn(creditCard);
+
+        CreditCard result = creditCardService.save(creditCard, request);
+
+        assertEquals(123456789L, result.getNumber());
+        assertEquals(CardStatus.ACTIVE, result.getStatus());
+        assertEquals(1000.0, result.getBalance());
+        assertEquals(LocalDate.now().plusYears(4).atStartOfDay(), result.getDueToDate());
+        verify(creditCardRepository).save(any(CreditCard.class));
+    }
+
+    @Test
+    void save_nullNumber_throwsIllegalArgumentException() {
+        creditCard.setNumber(null);
+
+        assertThrows(IllegalArgumentException.class, () -> creditCardService.save(creditCard, request));
+        verify(creditCardRepository, never()).save(any(CreditCard.class));
+    }
+
+    @Test
+    void save_existingNumber_throwsIllegalArgumentException() {
+        when(creditCardRepository.findByNumber(123456789L)).thenReturn(Optional.of(creditCard));
+
+        assertThrows(IllegalArgumentException.class, () -> creditCardService.save(creditCard, request));
+        verify(creditCardRepository, never()).save(any(CreditCard.class));
+    }
+
+    @Test
+    void save_invalidCardHolderId_throwsIllegalArgumentException() {
+        when(creditCardRepository.findByNumber(123456789L)).thenReturn(Optional.empty());
+        when(cardHolderRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () -> creditCardService.save(creditCard, request));
+        verify(creditCardRepository, never()).save(any(CreditCard.class));
+    }
+
+    @Test
+    void commitTransaction_success() {
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+        when(userDetails.getId()).thenReturn(1L);
+        SecurityContextHolder.setContext(securityContext);
+        CreditCard toCard = new CreditCard();
+        toCard.setId(2L);
+        toCard.setCardHolder(cardHolder);
+        toCard.setBalance(500.0);
+        toCard.setStatus(CardStatus.ACTIVE);
+        toCard.setDueToDate(LocalDate.now().plusYears(4).atStartOfDay());
+
+        when(creditCardRepository.findById(1L)).thenReturn(Optional.of(creditCard));
+        when(creditCardRepository.findById(2L)).thenReturn(Optional.of(toCard));
+        when(creditCardRepository.save(creditCard)).thenReturn(creditCard);
+        when(creditCardRepository.save(toCard)).thenReturn(toCard);
+
+        List<CreditCard> result = creditCardService.commitTransaction(1L, 2L, 200.0);
+
+        assertEquals(2, result.size());
+        assertEquals(800.0, result.get(0).getBalance());
+        assertEquals(700.0, result.get(1).getBalance());
+        verify(creditCardRepository, times(2)).save(any(CreditCard.class));
+    }
+
+    @Test
+    void commitTransaction_sameCard_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> creditCardService.commitTransaction(1L, 1L, 200.0));
+        verify(creditCardRepository, never()).save(any(CreditCard.class));
+    }
+
+    @Test
+    void commitTransaction_nonPositiveAmount_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> creditCardService.commitTransaction(1L, 2L, 0.0));
+        verify(creditCardRepository, never()).save(any(CreditCard.class));
+    }
+
+    @Test
+    void commitTransaction_fromCardNotFound_throwsIllegalArgumentException() {
+        when(creditCardRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () -> creditCardService.commitTransaction(1L, 2L, 200.0));
+        verify(creditCardRepository, never()).save(any(CreditCard.class));
+    }
+
+    @Test
+    void commitTransaction_toCardNotFound_throwsIllegalArgumentException() {
+        when(creditCardRepository.findById(1L)).thenReturn(Optional.of(creditCard));
+        when(creditCardRepository.findById(2L)).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () -> creditCardService.commitTransaction(1L, 2L, 200.0));
+        verify(creditCardRepository, never()).save(any(CreditCard.class));
+    }
+
+    @Test
+    void commitTransaction_inactiveCard_throwsIllegalArgumentException() {
+        creditCard.setStatus(CardStatus.BLOCKED);
+        when(creditCardRepository.findById(1L)).thenReturn(Optional.of(creditCard));
+
+        assertThrows(IllegalArgumentException.class, () -> creditCardService.commitTransaction(1L, 2L, 200.0));
+        verify(creditCardRepository, never()).save(any(CreditCard.class));
+    }
+
+    @Test
+    void commitTransaction_exceedsLimit_throwsIllegalArgumentException() {
+        creditCard.setLimit(100.0);
+        creditCard.setLimitDate(LocalDateTime.now().plusDays(1));
+        when(creditCardRepository.findById(1L)).thenReturn(Optional.of(creditCard));
+
+        assertThrows(IllegalArgumentException.class, () -> creditCardService.commitTransaction(1L, 2L, 200.0));
+        verify(creditCardRepository, never()).save(any(CreditCard.class));
+    }
+
+    @Test
+    void commitTransaction_insufficientFunds_throwsIllegalArgumentException() {
+        when(creditCardRepository.findById(1L)).thenReturn(Optional.of(creditCard));
+
+        assertThrows(IllegalArgumentException.class, () -> creditCardService.commitTransaction(1L, 2L, 2000.0));
+        verify(creditCardRepository, never()).save(any(CreditCard.class));
+    }
+
+    @Test
+    void commitTransaction_expiredCard_throwsIllegalArgumentException() {
+        creditCard.setDueToDate(LocalDate.now().minusDays(1).atStartOfDay());
+        when(creditCardRepository.findById(1L)).thenReturn(Optional.of(creditCard));
+        when(creditCardRepository.findById(2L)).thenReturn(Optional.of(new CreditCard()));
+        when(creditCardRepository.save(any(CreditCard.class))).thenReturn(creditCard);
+
+        assertThrows(IllegalArgumentException.class, () -> creditCardService.commitTransaction(1L, 2L, 200.0));
+        verify(creditCardRepository).findById(1L);
+        verify(creditCardRepository).findById(2L);
+        verify(creditCardRepository).save(creditCard);
+    }
+
+    @Test
+    void commitTransaction_differentOwners_throwsIllegalArgumentException() {
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+        when(userDetails.getId()).thenReturn(1L);
+        SecurityContextHolder.setContext(securityContext);
+        CreditCard toCard = new CreditCard();
+        toCard.setId(2L);
+        toCard.setCardHolder(new CardHolder());
+        toCard.getCardHolder().setId(2L);
+        toCard.setStatus(CardStatus.ACTIVE);
+        toCard.setDueToDate(LocalDate.now().plusYears(4).atStartOfDay());
+
+        when(creditCardRepository.findById(1L)).thenReturn(Optional.of(creditCard));
+        when(creditCardRepository.findById(2L)).thenReturn(Optional.of(toCard));
+
+        assertThrows(IllegalArgumentException.class, () -> creditCardService.commitTransaction(1L, 2L, 200.0));
+        verify(creditCardRepository, never()).save(any(CreditCard.class));
+    }
+
+    @Test
+    void withdrawMoney_success() {
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+        when(userDetails.getId()).thenReturn(1L);
+        SecurityContextHolder.setContext(securityContext);
+        when(creditCardRepository.findById(1L)).thenReturn(Optional.of(creditCard));
+        when(creditCardRepository.save(creditCard)).thenReturn(creditCard);
+
+        CreditCard result = creditCardService.withdrawMoney(1L, 200.0);
+
+        assertEquals(800.0, result.getBalance());
+        verify(creditCardRepository).save(creditCard);
+    }
+
+    @Test
+    void withdrawMoney_nonPositiveAmount_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> creditCardService.withdrawMoney(1L, 0.0));
+        verify(creditCardRepository, never()).save(any(CreditCard.class));
+    }
+
+    @Test
+    void withdrawMoney_cardNotFound_throwsIllegalArgumentException() {
+        when(creditCardRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () -> creditCardService.withdrawMoney(1L, 200.0));
+        verify(creditCardRepository, never()).save(any(CreditCard.class));
+    }
+
+    @Test
+    void withdrawMoney_inactiveCard_throwsIllegalArgumentException() {
+        creditCard.setStatus(CardStatus.BLOCKED);
+        when(creditCardRepository.findById(1L)).thenReturn(Optional.of(creditCard));
+
+        assertThrows(IllegalArgumentException.class, () -> creditCardService.withdrawMoney(1L, 200.0));
+        verify(creditCardRepository, never()).save(any(CreditCard.class));
+    }
+
+    @Test
+    void withdrawMoney_exceedsLimit_throwsIllegalArgumentException() {
+        creditCard.setLimit(100.0);
+        creditCard.setLimitDate(LocalDateTime.now().plusDays(1));
+        when(creditCardRepository.findById(1L)).thenReturn(Optional.of(creditCard));
+
+        assertThrows(IllegalArgumentException.class, () -> creditCardService.withdrawMoney(1L, 200.0));
+        verify(creditCardRepository, never()).save(any(CreditCard.class));
+    }
+
+    @Test
+    void withdrawMoney_insufficientFunds_throwsIllegalArgumentException() {
+        when(creditCardRepository.findById(1L)).thenReturn(Optional.of(creditCard));
+
+        assertThrows(IllegalArgumentException.class, () -> creditCardService.withdrawMoney(1L, 2000.0));
+        verify(creditCardRepository, never()).save(any(CreditCard.class));
+    }
+
+    @Test
+    void withdrawMoney_expiredCard_throwsIllegalArgumentException() {
+        creditCard.setDueToDate(LocalDate.now().minusDays(1).atStartOfDay());
+        when(creditCardRepository.findById(1L)).thenReturn(Optional.of(creditCard));
+        when(creditCardRepository.save(any(CreditCard.class))).thenReturn(creditCard);
+
+        assertThrows(IllegalArgumentException.class, () -> creditCardService.withdrawMoney(1L, 200.0));
+        verify(creditCardRepository).save(creditCard);
+    }
+
+    @Test
+    void withdrawMoney_notOwned_throwsIllegalArgumentException() {
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+        when(userDetails.getId()).thenReturn(1L);
+        SecurityContextHolder.setContext(securityContext);
+        cardHolder.setId(2L);
+        when(creditCardRepository.findById(1L)).thenReturn(Optional.of(creditCard));
+
+        assertThrows(IllegalArgumentException.class, () -> creditCardService.withdrawMoney(1L, 200.0));
+        verify(creditCardRepository, never()).save(any(CreditCard.class));
+    }
+
+    @Test
+    void blockCreditCard_success() {
+        creditCard.setStatus(CardStatus.ACTIVE);
+        when(creditCardRepository.findById(1L)).thenReturn(Optional.of(creditCard));
+        when(creditCardRepository.save(creditCard)).thenReturn(creditCard);
+
+        CreditCard result = creditCardService.blockCreditCard(1L);
+
+        assertEquals(CardStatus.BLOCKED, result.getStatus());
+        verify(creditCardRepository).save(creditCard);
+    }
+
+    @Test
+    void blockCreditCard_notFound_throwsEntityNotFoundException() {
+        when(creditCardRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> creditCardService.blockCreditCard(1L));
+        verify(creditCardRepository, never()).save(any(CreditCard.class));
+    }
+
+    @Test
+    void blockCreditCard_alreadyBlocked_throwsIllegalArgumentException() {
+        creditCard.setStatus(CardStatus.BLOCKED);
+        when(creditCardRepository.findById(1L)).thenReturn(Optional.of(creditCard));
+
+        assertThrows(IllegalArgumentException.class, () -> creditCardService.blockCreditCard(1L));
+        verify(creditCardRepository, never()).save(any(CreditCard.class));
+    }
+
+    @Test
+    void activateCreditCard_success() {
+        creditCard.setStatus(CardStatus.BLOCKED);
+        when(creditCardRepository.findById(1L)).thenReturn(Optional.of(creditCard));
+        when(creditCardRepository.save(creditCard)).thenReturn(creditCard);
+
+        CreditCard result = creditCardService.activateCreditCard(1L);
+
+        assertEquals(CardStatus.ACTIVE, result.getStatus());
+        verify(creditCardRepository).save(creditCard);
+    }
+
+    @Test
+    void activateCreditCard_notFound_throwsEntityNotFoundException() {
+        when(creditCardRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> creditCardService.activateCreditCard(1L));
+        verify(creditCardRepository, never()).save(any(CreditCard.class));
+    }
+
+    @Test
+    void activateCreditCard_alreadyActive_throwsIllegalArgumentException() {
+        creditCard.setStatus(CardStatus.ACTIVE);
+        when(creditCardRepository.findById(1L)).thenReturn(Optional.of(creditCard));
+
+        assertThrows(IllegalArgumentException.class, () -> creditCardService.activateCreditCard(1L));
+        verify(creditCardRepository, never()).save(any(CreditCard.class));
+    }
+
+    @Test
+    void addLimit_success() {
+        when(creditCardRepository.findById(1L)).thenReturn(Optional.of(creditCard));
+        when(creditCardRepository.save(creditCard)).thenReturn(creditCard);
+
+        CreditCard result = creditCardService.addLimit(1L, 500.0, LimitDuration.MONTH);
+
+        assertEquals(500.0, result.getLimit());
+        assertNotNull(result.getLimitDate());
+        verify(creditCardRepository).save(creditCard);
+    }
+
+    @Test
+    void addLimit_nonPositiveLimit_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> creditCardService.addLimit(1L, 0.0, LimitDuration.MONTH));
+        verify(creditCardRepository, never()).save(any(CreditCard.class));
+    }
+
+    @Test
+    void addLimit_notFound_throwsEntityNotFoundException() {
+        when(creditCardRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> creditCardService.addLimit(1L, 500.0, LimitDuration.MONTH));
+        verify(creditCardRepository, never()).save(any(CreditCard.class));
+    }
+
+    @Test
+    void requestToBlock_success() {
+        creditCard.setStatus(CardStatus.ACTIVE);
+        when(creditCardRepository.findById(1L)).thenReturn(Optional.of(creditCard));
+        when(creditCardRepository.save(creditCard)).thenReturn(creditCard);
+
+        CreditCard result = creditCardService.requestToBlock(1L);
+
+        assertEquals(CardStatus.REQUESTED_TO_BLOCK, result.getStatus());
+        verify(creditCardRepository).save(creditCard);
+    }
+
+    @Test
+    void requestToBlock_notFound_throwsEntityNotFoundException() {
+        when(creditCardRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> creditCardService.requestToBlock(1L));
+        verify(creditCardRepository, never()).save(any(CreditCard.class));
+    }
+
+    @Test
+    void requestToBlock_alreadyRequestedOrBlocked_throwsIllegalArgumentException() {
+        creditCard.setStatus(CardStatus.REQUESTED_TO_BLOCK);
+        when(creditCardRepository.findById(1L)).thenReturn(Optional.of(creditCard));
+
+        assertThrows(IllegalArgumentException.class, () -> creditCardService.requestToBlock(1L));
+        verify(creditCardRepository, never()).save(any(CreditCard.class));
+    }
+
+    @Test
+    void deleteById_success() {
+        when(creditCardRepository.existsById(1L)).thenReturn(true);
+
+        creditCardService.deleteById(1L);
+
+        verify(creditCardRepository).deleteById(1L);
+    }
+
+    @Test
+    void deleteById_notFound_throwsEntityNotFoundException() {
+        when(creditCardRepository.existsById(1L)).thenReturn(false);
+
+        assertThrows(EntityNotFoundException.class, () -> creditCardService.deleteById(1L));
+        verify(creditCardRepository, never()).deleteById(anyLong());
+    }
+}

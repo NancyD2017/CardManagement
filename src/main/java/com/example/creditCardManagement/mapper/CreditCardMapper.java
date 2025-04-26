@@ -8,10 +8,12 @@ import com.example.creditCardManagement.model.response.CreditCardTransactionHist
 import com.example.creditCardManagement.model.response.CreditCardTransactionHistoryResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 
 import java.util.List;
-
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface CreditCardMapper {
@@ -21,6 +23,12 @@ public interface CreditCardMapper {
     CreditCardResponse creditCardToResponse(CreditCard creditCard);
 
     List<CreditCardResponse> creditCardListToCreditCardResponseList(List<CreditCard> creditCards);
+
+    @Named("pageToPageResponse")
+    default Page<CreditCardResponse> creditCardPageToCreditCardResponsePage(Page<CreditCard> creditCards) {
+        List<CreditCardResponse> responses = creditCardListToCreditCardResponseList(creditCards.getContent());
+        return new PageImpl<>(responses, creditCards.getPageable(), creditCards.getTotalElements());
+    }
 
     CreditCardTransactionHistoryResponse creditCardToCreditCardTransactionHistoryResponse(CreditCard creditCard);
 

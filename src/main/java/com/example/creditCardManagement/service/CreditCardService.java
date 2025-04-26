@@ -11,6 +11,7 @@ import com.example.creditCardManagement.repository.CardHolderRepository;
 import com.example.creditCardManagement.repository.CreditCardRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,13 +30,13 @@ public class CreditCardService {
     private final CreditCardRepository creditCardRepository;
     private final CardHolderRepository cardHolderRepository;
 
-    public List<CreditCard> filterBy(CreditCardFilterRequest filter) {
+    public Page<CreditCard> filterBy(CreditCardFilterRequest filter) {
         CreditCardFilter creditCardFilter = new CreditCardFilter();
         creditCardFilter.setCardHolderId(filter.getCardHolderId());
         creditCardFilter.setTransactionHistory(filter.getTransactionHistory());
         creditCardFilter.setPageNumber(Objects.requireNonNullElse(filter.getPageNumber(), 0));
         creditCardFilter.setPageSize(Objects.requireNonNullElse(filter.getPageSize(), 10));
-        return creditCardRepository.findAll(CreditCardSpecification.withFilter(creditCardFilter), creditCardFilter.toPageable());
+        return creditCardRepository.findAllBySpecification(CreditCardSpecification.withFilter(creditCardFilter), creditCardFilter.toPageable());
     }
 
     public List<CreditCard> findAllByCardHolder() {
@@ -48,15 +49,18 @@ public class CreditCardService {
 
     @Transactional
     public CreditCard save(CreditCard creditCard, UpsertCreditCardRequest request) {
+        if (creditCard.getNumber() == null) {
+            throw new IllegalArgumentException("Card number is required");
+        }
         if (creditCardRepository.findByNumber(creditCard.getNumber()).isPresent()) {
-            throw new IllegalArgumentException("CreditCard with number " + creditCard.getNumber() + " already exists");
+            throw new IllegalArgumentException("Credit card with number " + creditCard.getNumber() + " already exists");
         }
         setCardHolder(creditCard, request);
         if (creditCard.getCardHolder() == null) {
             throw new IllegalArgumentException("Invalid cardHolderId");
         }
         creditCard.setDueToDate(LocalDate.now().plusYears(4).atStartOfDay());
-        creditCard.setBalance(0.0);
+        creditCard.setBalance(request.getBalance() == null ? 0.0D : request.getBalance());
         creditCard.setStatus(CardStatus.ACTIVE);
         CreditCard savedCard = creditCardRepository.save(creditCard);
         updateCardHolder(savedCard);
@@ -68,10 +72,13 @@ public class CreditCardService {
         if (Objects.equals(fromId, toId)) {
             throw new IllegalArgumentException("Cannot transfer to the same card");
         }
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Amount must be positive");
+        }
         CreditCard fromCard = creditCardRepository.findById(fromId)
-                .orElseThrow(() -> new IllegalArgumentException("CreditCard with id " + fromId + " not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Credit card with id " + fromId + " not found"));
         CreditCard toCard = creditCardRepository.findById(toId)
-                .orElseThrow(() -> new IllegalArgumentException("CreditCard with id " + toId + " not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Credit card with id " + toId + " not found"));
 
         validateTransaction(fromCard, amount);
         validateCardOwnership(fromCard, toCard);
@@ -90,8 +97,11 @@ public class CreditCardService {
 
     @Transactional
     public CreditCard withdrawMoney(Long fromId, Double amount) {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Amount must be positive");
+        }
         CreditCard fromCard = creditCardRepository.findById(fromId)
-                .orElseThrow(() -> new IllegalArgumentException("CreditCard with id " + fromId + " not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Credit card with id " + fromId + " not found"));
 
         validateTransaction(fromCard, amount);
         if (!fromCard.getCardHolder().getId().equals(findCardHolderId())) {
@@ -109,7 +119,10 @@ public class CreditCardService {
     @Transactional
     public CreditCard blockCreditCard(Long id) {
         CreditCard card = creditCardRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("CreditCard with id " + id + " not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Credit card with id " + id + " not found"));
+        if (card.getStatus() == CardStatus.BLOCKED) {
+            throw new IllegalArgumentException("Card with id " + id + " is already blocked");
+        }
         card.setStatus(CardStatus.BLOCKED);
         return creditCardRepository.save(card);
     }
@@ -117,21 +130,27 @@ public class CreditCardService {
     @Transactional
     public CreditCard activateCreditCard(Long id) {
         CreditCard card = creditCardRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("CreditCard with id " + id + " not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Credit card with id " + id + " not found"));
+        if (card.getStatus() == CardStatus.ACTIVE) {
+            throw new IllegalArgumentException("Card with id " + id + " is already active");
+        }
         card.setStatus(CardStatus.ACTIVE);
         return creditCardRepository.save(card);
     }
 
     @Transactional
     public CreditCard addLimit(Long id, Double limit, LimitDuration limitDuration) {
+        if (limit <= 0) {
+            throw new IllegalArgumentException("Limit must be positive");
+        }
         CreditCard card = creditCardRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("CreditCard with id " + id + " not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Credit card with id " + id + " not found"));
         card.setLimit(limit);
         card.setLimitDate(switch (limitDuration) {
-            case YEAR -> LocalDate.now().plusYears(1).atStartOfDay();
-            case MONTH -> LocalDate.now().plusMonths(1).atStartOfDay();
-            case SEASON -> LocalDate.now().plusMonths(3).atStartOfDay();
-            case DAY -> LocalDate.now().plusDays(1).atStartOfDay();
+            case YEAR -> LocalDateTime.now().plusYears(1);
+            case MONTH -> LocalDateTime.now().plusMonths(1);
+            case SEASON -> LocalDateTime.now().plusMonths(3);
+            case DAY -> LocalDateTime.now().plusDays(1);
         });
         card.addTransaction(LocalDateTime.now() + ": Added limit " + limit + " per " + limitDuration.name().toLowerCase());
         return creditCardRepository.save(card);
@@ -140,7 +159,10 @@ public class CreditCardService {
     @Transactional
     public CreditCard requestToBlock(Long id) {
         CreditCard card = creditCardRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("CreditCard with id " + id + " not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Credit card with id " + id + " not found"));
+        if (card.getStatus() == CardStatus.REQUESTED_TO_BLOCK || card.getStatus() == CardStatus.BLOCKED) {
+            throw new IllegalArgumentException("Card with id " + id + " is already requested to block or blocked");
+        }
         card.setStatus(CardStatus.REQUESTED_TO_BLOCK);
         card.addTransaction(LocalDateTime.now() + ": Request to block the credit card");
         return creditCardRepository.save(card);
@@ -149,7 +171,7 @@ public class CreditCardService {
     @Transactional
     public void deleteById(Long id) {
         if (!creditCardRepository.existsById(id)) {
-            throw new EntityNotFoundException("CreditCard with id " + id + " not found");
+            throw new EntityNotFoundException("Credit card with id " + id + " not found");
         }
         creditCardRepository.deleteById(id);
     }
@@ -173,11 +195,14 @@ public class CreditCardService {
                 userDetails instanceof com.example.creditCardManagement.security.AppUserDetails appUserDetails) {
             return appUserDetails.getId();
         }
-        return null;
+        throw new IllegalStateException("User not authenticated");
     }
 
     private void validateTransaction(CreditCard card, Double amount) {
-        if (LocalDateTime.now().isBefore(card.getLimitDate()) && card.getLimit() < amount) {
+        if (card.getStatus() != CardStatus.ACTIVE) {
+            throw new IllegalArgumentException("Card with id " + card.getId() + " is not active");
+        }
+        if (card.getLimitDate() != null && LocalDateTime.now().isBefore(card.getLimitDate()) && card.getLimit() < amount) {
             throw new IllegalArgumentException("Amount exceeds limit for card " + card.getId());
         }
         if (card.getBalance() < amount) {

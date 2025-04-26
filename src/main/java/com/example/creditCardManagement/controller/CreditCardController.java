@@ -10,21 +10,22 @@ import com.example.creditCardManagement.service.CreditCardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/creditCardManagement/creditCard")
 @RequiredArgsConstructor
 @Tag(name = "Банковские карты", description = "Контроллер для управления банковскими картами")
+@SecurityRequirement(name = "bearerAuth")
 public class CreditCardController {
     private final CreditCardService creditCardService;
     private final CreditCardMapper creditCardMapper;
@@ -47,8 +48,8 @@ public class CreditCardController {
     })
     @GetMapping("/filter")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<List<CreditCardResponse>> filterCards(@Valid @RequestBody CreditCardFilterRequest filter) {
-        return ResponseEntity.ok(creditCardMapper.creditCardListToCreditCardResponseList(creditCardService.filterBy(filter)));
+    public ResponseEntity<Page<CreditCardResponse>> filterCards(@Valid @RequestBody CreditCardFilterRequest filter) {
+        return ResponseEntity.ok(creditCardMapper.creditCardPageToCreditCardResponsePage(creditCardService.filterBy(filter)));
     }
 
     @Operation(summary = "Создать банковскую карту", description = "Создаёт новую карту")

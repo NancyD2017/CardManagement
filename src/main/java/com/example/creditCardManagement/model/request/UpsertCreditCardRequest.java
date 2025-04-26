@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @CreditCardRequestValid
 public class UpsertCreditCardRequest {
     private Long number;
+    private Double balance;
     private CardStatus status;
     private Long cardHolderId;
 }
