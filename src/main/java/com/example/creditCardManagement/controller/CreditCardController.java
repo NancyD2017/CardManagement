@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -28,145 +29,139 @@ public class CreditCardController {
     private final CreditCardService creditCardService;
     private final CreditCardMapper creditCardMapper;
 
-
-    @Operation(summary = "Получить банковские карты по ID пользователя", description = "Возвращает банковскую карту по идентификатору (только для админов)")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Банковские карты найдены"),
-            @ApiResponse(responseCode = "404", description = "Банковские карты не найдены")
+    @Operation(summary = "Получить банковские карты пользователя", description = "Возвращает список карт текущего пользователя")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Список карт возвращён"),
+            @ApiResponse(responseCode = "401", description = "Пользователь не авторизован")
     })
     @GetMapping
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<CreditCardListResponse> getById() {
-        List<CreditCard> list = creditCardService.findAllByCardHolder();
-        return ResponseEntity.ok(creditCardMapper.toCreditCardListResponse(list));
+    public ResponseEntity<CreditCardListResponse> getUserCards() {
+        return ResponseEntity.ok(creditCardMapper.toCreditCardListResponse(creditCardService.findAllByCardHolder()));
     }
 
-
-    @Operation(summary = "Фильтр банковских карт", description = "Фильтрует банковские карты по владельцу и транзакциям, а также проводит пагинацию")
-    @ApiResponse(responseCode = "200", description = "Список банковских карт с фильтром")
+    @Operation(summary = "Фильтр банковских карт", description = "Фильтрует карты по владельцу и транзакциям с пагинацией")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Список карт возвращён"),
+            @ApiResponse(responseCode = "400", description = "Некорректный запрос")
+    })
     @GetMapping("/filter")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<List<CreditCardResponse>> filterBy(@Valid @RequestBody CreditCardFilterRequest filter) {
+    public ResponseEntity<List<CreditCardResponse>> filterCards(@Valid @RequestBody CreditCardFilterRequest filter) {
         return ResponseEntity.ok(creditCardMapper.creditCardListToCreditCardResponseList(creditCardService.filterBy(filter)));
     }
 
-
-    @Operation(summary = "Создать банковскую карту", description = "Добавляет новую банковскую карту (только для админов)")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Банковская карты создана"),
+    @Operation(summary = "Создать банковскую карту", description = "Создаёт новую карту")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Карта создана"),
             @ApiResponse(responseCode = "400", description = "Некорректные данные")
     })
     @PostMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<CreditCardResponse> createCreditCard(@Valid @RequestBody UpsertCreditCardRequest creditCard) {
-        CreditCard t = creditCardService.save(creditCardMapper.requestToCreditCard(creditCard), creditCard);
-        return ResponseEntity.ok(creditCardMapper.creditCardToResponse(t));
+    public ResponseEntity<CreditCardResponse> createCard(@Valid @RequestBody UpsertCreditCardRequest request) {
+        CreditCard card = creditCardService.save(creditCardMapper.requestToCreditCard(request), request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(creditCardMapper.creditCardToResponse(card));
     }
 
-    @Operation(summary = "Просматривать историю транзакций по картам пользователя", description = "Возвращает историю транзакций по идентификатору пользователя")
-    @ApiResponse(responseCode = "200", description = "История транзакций найдена")
+    @Operation(summary = "Получить историю транзакций", description = "Возвращает историю транзакций карт пользователя")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "История транзакций возвращена"),
+            @ApiResponse(responseCode = "401", description = "Пользователь не авторизован")
+    })
     @GetMapping("/transactionHistory")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<CreditCardTransactionHistoryListResponse> getTransactionHistoryById() {
-        List<CreditCard> list = creditCardService.findAllByCardHolder();
-        return ResponseEntity.ok(creditCardMapper.toCreditCardTransactionHistoryListResponse(list));
+    public ResponseEntity<CreditCardTransactionHistoryListResponse> getTransactionHistory() {
+        return ResponseEntity.ok(creditCardMapper.toCreditCardTransactionHistoryListResponse(creditCardService.findAllByCardHolder()));
     }
 
-    @Operation(summary = "Совершить перевод между банковскими картами одного пользователя", description = "Совершает перевод между банковскими картами одного пользователя")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Перевод выполнен"),
-            @ApiResponse(responseCode = "400", description = "Некорректная операция: неправильные номера карт, исчерпан лимит, недостаточно средств, карты просрочены или не принадлежат пользователю")
+    @Operation(summary = "Перевод между картами", description = "Совершает перевод между картами пользователя")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Перевод выполнен"),
+            @ApiResponse(responseCode = "400", description = "Некорректная операция")
     })
-    @PutMapping("commitTransaction")
+    @PutMapping("/commitTransaction")
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<CreditCardListResponse> commitTransaction(@Valid @RequestBody UpsertTransactionRequest request) {
-        List<CreditCard> cards = creditCardService.commitTransaction(request.getFromId(), request.getToId(), request.getAmount());
-        return ResponseEntity.ok(creditCardMapper.toCreditCardListResponse(cards));
+        return ResponseEntity.ok(creditCardMapper.toCreditCardListResponse(creditCardService.commitTransaction(
+                request.getFromId(), request.getToId(), request.getAmount())));
     }
 
-    @Operation(summary = "Совершить перевод между банковскими картами одного пользователя", description = "Совершает перевод между банковскими картами одного пользователя")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Перевод выполнен"),
-            @ApiResponse(responseCode = "400", description = "Некорректная операция: неправильный номер карты, исчерпан лимит, недостаточно средств, карта просрочена или не принадлежит пользователю")
+    @Operation(summary = "Снятие денег", description = "Снимает деньги с карты пользователя")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Снятие выполнено"),
+            @ApiResponse(responseCode = "400", description = "Некорректная операция")
     })
-    @PutMapping("withdrawMoney")
+    @PutMapping("/withdrawMoney")
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<CreditCardResponse> withdrawMoney(@Valid @RequestBody UpsertWithdrawalRequest request) {
-        CreditCard card = creditCardService.withdrawMoney(request.getFromId(), request.getAmount());
-        return ResponseEntity.ok(creditCardMapper.creditCardToResponse(card));
+        return ResponseEntity.ok(creditCardMapper.creditCardToResponse(creditCardService.withdrawMoney(
+                request.getFromId(), request.getAmount())));
     }
 
-    @Operation(summary = "Добавить лимит банковской карте", description = "Добавляет лимит банковской карте (админ)")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Лимит банковской карте добавлен"),
-            @ApiResponse(responseCode = "404", description = "Банковская карта не найдена")
+    @Operation(summary = "Добавить лимит", description = "Устанавливает лимит для карты")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Лимит установлен"),
+            @ApiResponse(responseCode = "404", description = "Карта не найдена")
     })
     @PutMapping("/addLimit/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<CreditCardResponse> addLimit(@PathVariable Long id, @Valid @RequestBody UpsertLimitRequest limit) {
-        CreditCard t = creditCardService.addLimit(id, limit.getLimit(), limit.getLimitDuration());
-        return ResponseEntity.ok(creditCardMapper.creditCardToResponse(t));
+    public ResponseEntity<CreditCardResponse> addLimit(@PathVariable Long id, @Valid @RequestBody UpsertLimitRequest request) {
+        return ResponseEntity.ok(creditCardMapper.creditCardToResponse(creditCardService.addLimit(
+                id, request.getLimit(), request.getLimitDuration())));
     }
 
-    @Operation(summary = "Запросить блокировку банковской карты", description = "Добавляет запрос на блокировку в историю транзакций карты")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Запрос на блокировку принят"),
-            @ApiResponse(responseCode = "404", description = "Банковская карта не найдена")
+    @Operation(summary = "Запрос на блокировку карты", description = "Создаёт запрос на блокировку карты")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Запрос принят"),
+            @ApiResponse(responseCode = "404", description = "Карта не найдена")
     })
     @PutMapping("/requestToBlock/{id}")
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<CreditCardResponse> requestToBlock(@PathVariable Long id) {
-        CreditCard c = creditCardService.requestToBlock(id);
-        return ResponseEntity.ok(creditCardMapper.creditCardToResponse(c));
+        return ResponseEntity.ok(creditCardMapper.creditCardToResponse(creditCardService.requestToBlock(id)));
     }
 
-
-    @Operation(summary = "Заблокировать банковскую карту", description = "Блокирует банковскую карту (админ)")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Статус банковской карты обновлен"),
-            @ApiResponse(responseCode = "404", description = "Банковская карта не найдена")
+    @Operation(summary = "Блокировка карты", description = "Блокирует карту")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Карта заблокирована"),
+            @ApiResponse(responseCode = "404", description = "Карта не найдена")
     })
-    @PutMapping("/blockCreditCard/{id}")
+    @PutMapping("/block/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<CreditCardResponse> blockCreditCard(@PathVariable Long id) {
-        CreditCard t = creditCardService.blockCreditCard(id);
-        return ResponseEntity.ok(creditCardMapper.creditCardToResponse(t));
+    public ResponseEntity<CreditCardResponse> blockCard(@PathVariable Long id) {
+        return ResponseEntity.ok(creditCardMapper.creditCardToResponse(creditCardService.blockCreditCard(id)));
     }
 
-    @Operation(summary = "Активировать банковскую карту", description = "Активирует банковскую карту (админ)")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Статус банковской карты обновлен"),
-            @ApiResponse(responseCode = "404", description = "Банковская карта не найдена")
+    @Operation(summary = "Активация карты", description = "Активирует карту")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Карта активирована"),
+            @ApiResponse(responseCode = "404", description = "Карта не найдена")
     })
-    @PutMapping("/activateCreditCard/{id}")
+    @PutMapping("/activate/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<CreditCardResponse> activateCreditCard(@PathVariable Long id) {
-        CreditCard t = creditCardService.activateCreditCard(id);
-        return ResponseEntity.ok(creditCardMapper.creditCardToResponse(t));
+    public ResponseEntity<CreditCardResponse> activateCard(@PathVariable Long id) {
+        return ResponseEntity.ok(creditCardMapper.creditCardToResponse(creditCardService.activateCreditCard(id)));
     }
 
-
-    @Operation(summary = "Удалить банковскую карту", description = "Удаляет банковскую карту по ID (только для админов)")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Банковская карта удалена"),
-            @ApiResponse(responseCode = "404", description = "Банковская карта не найдена")
+    @Operation(summary = "Удаление карты", description = "Удаляет карту")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Карта удалена"),
+            @ApiResponse(responseCode = "404", description = "Карта не найдена")
     })
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Void> deleteCreditCard(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteCard(@PathVariable Long id) {
         creditCardService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgument(Exception ex) {
+    public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException ex) {
         return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<CreditCardResponse> handleEntityNotFound(Exception ex) {
+    public ResponseEntity<Void> handleEntityNotFound() {
         return ResponseEntity.notFound().build();
     }
 }
-
-

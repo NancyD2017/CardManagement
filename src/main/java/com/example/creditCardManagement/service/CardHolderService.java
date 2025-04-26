@@ -5,11 +5,13 @@ import com.example.creditCardManagement.repository.CardHolderRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CardHolderService {
     private final CardHolderRepository cardHolderRepository;
 
@@ -18,11 +20,15 @@ public class CardHolderService {
     }
 
     public CardHolder findById(Long id) {
-        return cardHolderRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return cardHolderRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("CardHolder with id " + id + " not found"));
     }
 
+    @Transactional
     public void deleteById(Long id) {
-        if (cardHolderRepository.findById(id).isEmpty()) throw new EntityNotFoundException();
+        if (!cardHolderRepository.existsById(id)) {
+            throw new EntityNotFoundException("CardHolder with id " + id + " not found");
+        }
         cardHolderRepository.deleteById(id);
     }
 }

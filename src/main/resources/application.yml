@@ -13,6 +13,10 @@ spring:
     show-sql: true
   main:
     allow-circular-references: true
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    date-format: yyyy-MM-dd'T'00:00:00
 logging:
   level:
     org:

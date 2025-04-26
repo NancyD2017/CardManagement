@@ -1,5 +1,6 @@
 package com.example.creditCardManagement.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,9 +25,14 @@ public class CreditCard {
     private CardStatus status;
 
     private Double balance;
+
+    @JsonFormat(pattern = "yyyy-MM-dd'T'00:00:00")
+    @Column(name = "limit_date")
     private LocalDateTime limitDate;
+
     @Column(name = "credit_limit")
     private Double limit;
+
     @Column(name = "remaining_balance")
     private Double left;
 
