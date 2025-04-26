@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding">
-    <file url="file://$PROJECT_DIR$/src/main/java/com/example/task_management/aspect" charset="windows-1251" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/example/task_management/configuration" charset="windows-1251" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/example/task_management/controller" charset="windows-1251" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/example/task_management/controller/TaskController.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/example/task_management/controller/UserController.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/example/task_management/entity" charset="windows-1251" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/example/task_management/event" charset="windows-1251" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/example/task_management/exception/AccessDeniedException.java" charset="windows-1251" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/example/task_management/exception/AlreadyExistsException.java" charset="windows-1251" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/example/task_management/exception/EntityNotFoundException.java" charset="windows-1251" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/example/task_management/exception/RefreshTokenException.java" charset="windows-1251" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/example/task_management/exception/UpdateStateException.java" charset="windows-1251" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/example/task_management/exception/handlers" charset="windows-1251" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/example/task_management/filter" charset="windows-1251" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/example/task_management/mapper" charset="windows-1251" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/example/task_management/model" charset="windows-1251" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/example/task_management/repository" charset="windows-1251" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/example/task_management/security" charset="windows-1251" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/example/task_management/service" charset="windows-1251" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/example/task_management/validation" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/aspect" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/configuration" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/controller" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/controller/CardHolderController.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/controller/CreditCardController.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/entity" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/event" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/exception/AccessDeniedException.java" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/exception/AlreadyExistsException.java" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/exception/EntityNotFoundException.java" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/exception/RefreshTokenException.java" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/exception/UpdateStateException.java" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/exception/handlers" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/filter" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/mapper" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/model" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/repository" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/security" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/service" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/validation" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/src/main/resources/application.yml" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/src/main/resources/docker-compose.yml" charset="windows-1251" />
   </component>

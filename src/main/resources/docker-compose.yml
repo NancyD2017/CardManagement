@@ -6,7 +6,7 @@ services:
       - "3307:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_DATABASE=task_management
+      - MYSQL_DATABASE=credit_card_management
     volumes:
       - mysql-data:/var/lib/mysql
 
