@@ -2,6 +2,12 @@ databaseChangeLog:
   - changeSet:
       id: 1
       author: Anastasia
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            schemaName: credit_card_management
+            tableName: card_holders
       changes:
         - createTable:
             tableName: card_holders
@@ -13,23 +19,62 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
               - column:
+                  name: username
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
                   name: email
                   type: varchar(255)
                   constraints:
-                    unique: true
                     nullable: false
+                    unique: true
               - column:
                   name: password
                   type: varchar(255)
                   constraints:
                     nullable: false
+  - changeSet:
+      id: 2
+      author: Anastasia
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            schemaName: credit_card_management
+            tableName: card_holder_roles
+      changes:
+        - createTable:
+            tableName: card_holder_roles
+            columns:
               - column:
-                  name: role
+                  name: card_holder_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: roles
                   type: varchar(50)
                   constraints:
                     nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: card_holder_roles
+            baseColumnNames: card_holder_id
+            constraintName: fk_card_holder_roles
+            referencedTableName: card_holders
+            referencedColumnNames: id
+  - changeSet:
+      id: 3
+      author: Anastasia
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            schemaName: credit_card_management
+            tableName: credit_card
+      changes:
         - createTable:
-            tableName: credit_cards
+            tableName: credit_card
             columns:
               - column:
                   name: id
@@ -39,13 +84,10 @@ databaseChangeLog:
                     primaryKey: true
               - column:
                   name: number
-                  type: varchar(255)
-                  constraints:
-                    unique: true
-                    nullable: false
+                  type: bigint
               - column:
                   name: due_to_date
-                  type: datetime
+                  type: timestamp
               - column:
                   name: status
                   type: varchar(50)
@@ -54,28 +96,50 @@ databaseChangeLog:
                   type: double
               - column:
                   name: limit_date
-                  type: datetime
+                  type: timestamp
               - column:
-                  name: credit_limit
-                  type: double
-              - column:
-                  name: remaining_balance
+                  name: limit
                   type: double
               - column:
                   name: card_holder_id
                   type: bigint
                   constraints:
-                    foreignKeyName: fk_card_holder
+                    foreignKeyName: fk_credit_card_card_holder
                     references: card_holders(id)
+  - changeSet:
+      id: 4
+      author: Anastasia
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            schemaName: credit_card_management
+            tableName: transaction
+      changes:
         - createTable:
-            tableName: credit_cards_transaction_history
+            tableName: transaction
             columns:
               - column:
-                  name: credit_cards_id
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: amount
+                  type: double
+              - column:
+                  name: transaction_date
+                  type: timestamp
+              - column:
+                  name: from_card_id
                   type: bigint
                   constraints:
-                    foreignKeyName: fk_credit_card_transaction
-                    references: credit_cards(id)
+                    foreignKeyName: fk_transaction_from_card
+                    references: credit_card(id)
               - column:
-                  name: transaction_history
-                  type: varchar(255)
+                  name: to_card_id
+                  type: bigint
+                  constraints:
+                    foreignKeyName: fk_transaction_to_card
+                    references: credit_card(id)

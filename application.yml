@@ -1,24 +1,32 @@
+server:
+  port: 8080
+
 spring:
   application:
     name: creditCardManagement
   datasource:
-    url: ${DB_URL:jdbc:mysql://localhost:3306/credit_card_management?useSSL=false&requireSSL=false&allowPublicKeyRetrieval=true}
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:myheadpounds16D}
+    url: ${DB_URL:jdbc:mysql://localhost:3306/credit_card_management?useSSL=false&allowPublicKeyRetrieval=true}
+    username: ${DB_USERNAME:user}
+    password: ${DB_PASSWORD:password}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: none
     show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+    enabled: true
   main:
     allow-circular-references: true
-logging:
-  level:
-    org:
-      springframework: DEBUG
+
+jwt:
+  secret: your-very-secure-jwt-secret-key
+  expiration: 86400000
+
 app:
   jwt:
     secret: ${JWT_SECRET:SomeSecretKeyoidhujh9jkoi9ydhuj534nh89jjnhs7xvjmhziklogjmmskmrpojksgns8ejHUYhfnnbythbfhjz7lUHNN89f79gin58ujmgnbn}
@@ -26,8 +34,15 @@ app:
     refreshTokenExpiration: ${JWT_REFRESH_TOKEN_EXPIRATION:30m}
   encryption:
     secret-key: ${ENCRYPTION_SECRET_KEY:SomeSecretKeyoidhujh9jkoi9ydhuj534nh89jjnhs7xvjmhziklogjmmskmrpojksgns8ejHUYhfnnbythbfhjz7lUHNN89f79gin58ujmgnbn}
+
 springdoc:
   api-docs:
     path: /v3/api-docs
   swagger-ui:
     path: /swagger-ui.html
+
+logging:
+  level:
+    liquibase: DEBUG
+    org.springframework: INFO
+    com.example.creditCardManagement: DEBUG

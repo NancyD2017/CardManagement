@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/application.yml" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/application.yml" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/docker-compose.yml" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/docker-compose.yml" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/aspect" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/configuration" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/controller" charset="windows-1251" />
@@ -38,7 +42,5 @@
     <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/security" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/service" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/validation" charset="windows-1251" />
-    <file url="file://$PROJECT_DIR$/src/main/resources/application.yml" charset="windows-1251" />
-    <file url="file://$PROJECT_DIR$/src/main/resources/docker-compose.yml" charset="windows-1251" />
   </component>
 </project>
