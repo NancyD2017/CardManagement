@@ -17,7 +17,22 @@
     <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/filter" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/mapper" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/model" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/model/entity/CardHolder.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/model/entity/CreditCard.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/model/request/CreditCardFilterRequest.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/model/request/LoginRequest.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/model/request/RefreshTokenRequest.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/model/request/UpsertCardHolderRequest.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/model/request/UpsertCreditCardRequest.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/model/request/UpsertLimitRequest.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/model/request/UpsertPutRequest.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/model/request/UpsertTransactionRequest.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/model/request/UpsertWithdrawalRequest.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/model/response/AuthResponse.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/model/response/CardHolderListResponse.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/model/response/CardHolderResponse.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/model/response/CreditCardListResponse.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/model/response/CreditCardResponse.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/repository" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/repository/CreditCardRepository.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java/com/example/creditCardManagement/security" charset="windows-1251" />
