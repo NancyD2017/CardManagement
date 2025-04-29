@@ -27,6 +27,9 @@ docker-compose up --build
 
 environment:
   SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/credit_card_management
+  
   SPRING_DATASOURCE_USERNAME: user
+  
   SPRING_DATASOURCE_PASSWORD: password
+  
   JWT_SECRET: your-secret-key
