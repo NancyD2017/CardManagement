@@ -5,9 +5,9 @@ spring:
   application:
     name: creditCardManagement
   datasource:
-    url: ${DB_URL:jdbc:mysql://localhost:3306/credit_card_management?useSSL=false&allowPublicKeyRetrieval=true}
-    username: ${DB_USERNAME:user}
-    password: ${DB_PASSWORD:password}
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
@@ -23,17 +23,13 @@ spring:
   main:
     allow-circular-references: true
 
-jwt:
-  secret: your-very-secure-jwt-secret-key
-  expiration: 86400000
-
 app:
   jwt:
-    secret: ${JWT_SECRET:SomeSecretKeyoidhujh9jkoi9ydhuj534nh89jjnhs7xvjmhziklogjmmskmrpojksgns8ejHUYhfnnbythbfhjz7lUHNN89f79gin58ujmgnbn}
-    tokenExpiration: ${JWT_TOKEN_EXPIRATION:300m}
-    refreshTokenExpiration: ${JWT_REFRESH_TOKEN_EXPIRATION:30m}
+    secret: SomeSecretKeyoidhujh9jkoi9ydhuj534nh89jjnhs7xvjmhziklogjmmskmrpojksgns8ejHUYhfnnbythbfhjz7lUHNN89f79gin58ujmgnbn
+    tokenExpiration: 300m
+    refreshTokenExpiration: 30m
   encryption:
-    secret-key: ${ENCRYPTION_SECRET_KEY:SomeSecretKeyoidhujh9jkoi9ydhuj534nh89jjnhs7xvjmhziklogjmmskmrpojksgns8ejHUYhfnnbythbfhjz7lUHNN89f79gin58ujmgnbn}
+    secret-key: SomeSecretKeyoidhujh9jkoi9ydhuj534nh89jjnhs7xvjmhziklogjmmskmrpojksgns8ejHUYhfnnbythbfhjz7lUHNN89f79gin58ujmgnbn
 
 springdoc:
   api-docs:

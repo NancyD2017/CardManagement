@@ -1,35 +1,44 @@
 version: '3.8'
+
 services:
   mysql:
     image: mysql:8.0
+    container_name: mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: credit_card_management
       MYSQL_USER: user
       MYSQL_PASSWORD: password
     ports:
-      - "3307:3306"
+      - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: .
+    container_name: app
     ports:
       - "8080:8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/credit_card_management?useSSL=false&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: password
-      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
-      SPRING_LIQUIBASE_ENABLED: false
-      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info
-      MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS: always
-      SPRING_BOOT_LOG_LEVEL: debug
-      JWT_SECRET: SomeSecretKeyoidhujh9jkoi9ydhuj534nh89jjnhs7xvjmhziklogjmmskmrpojksgns8ejHUYhfnnbythbfhjz7lUHNN89f79gin58ujmgnbn
-      JWT_TOKEN_EXPIRATION: 300m
-      JWT_REFRESH_TOKEN_EXPIRATION: 30m
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
+    networks:
+      - app-network
+
 volumes:
   mysql-data:
+
+networks:
+  app-network:
+    driver: bridge
