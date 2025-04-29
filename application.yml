@@ -12,14 +12,14 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
-      ddl-auto: none
+      ddl-auto: create-drop
     show-sql: true
     properties:
       hibernate:
         format_sql: true
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
-    enabled: true
+    enabled: false
   main:
     allow-circular-references: true
 
@@ -46,3 +46,12 @@ logging:
     liquibase: DEBUG
     org.springframework: INFO
     com.example.creditCardManagement: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always

@@ -1,6 +1,7 @@
 package com.example.creditCardManagement.controller;
 
 import com.example.creditCardManagement.mapper.CardHolderMapper;
+import com.example.creditCardManagement.model.entity.CardHolder;
 import com.example.creditCardManagement.model.request.LoginRequest;
 import com.example.creditCardManagement.model.request.RefreshTokenRequest;
 import com.example.creditCardManagement.model.request.UpsertCardHolderRequest;
@@ -17,6 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/creditCardManagement/cardHolder")
 @RequiredArgsConstructor
+@Slf4j
 @Tag(name = "Владельцы карт", description = "Контроллер для управления владельцами карт")
 public class CardHolderController {
     private final CardHolderService cardHolderService;
@@ -70,8 +73,16 @@ public class CardHolderController {
     })
     @PostMapping
     public ResponseEntity<CardHolderResponse> create(@Valid @RequestBody UpsertCardHolderRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(cardHolderMapper.cardHolderToResponse(securityService.register(request)));
+        log.debug("Received request to create card holder: {}", request);
+        try {
+            CardHolder cardHolder = securityService.register(request);
+            CardHolderResponse response = cardHolderMapper.cardHolderToResponse(cardHolder);
+            log.debug("Created card holder: {}", response);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (Exception e) {
+            log.error("Error creating card holder", e);
+            throw e;
+        }
     }
 
     @Operation(summary = "Обновить токен", description = "Обновляет JWT токен")

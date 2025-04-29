@@ -50,7 +50,7 @@ public class SecurityConfiguration {
         http.authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/creditCardManagement/creditCard/**").authenticated()
                         .requestMatchers("/creditCardManagement/cardHolder/**").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/error", "/favicon.ico").permitAll()
+                        .requestMatchers("/actuator/**", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/error", "/favicon.ico").permitAll()
                         .anyRequest().authenticated()
                 ).exceptionHandling(configurer -> configurer.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .csrf(AbstractHttpConfigurer::disable)
