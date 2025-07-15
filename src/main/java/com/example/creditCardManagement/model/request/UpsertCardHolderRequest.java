@@ -3,14 +3,13 @@ package com.example.creditCardManagement.model.request;
 import com.example.creditCardManagement.model.entity.Role;
 import com.example.creditCardManagement.validation.CardHolderRequestValid;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Set;
 
 @Schema(description = "Запрос для создания или обновления владельца карты")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @CardHolderRequestValid

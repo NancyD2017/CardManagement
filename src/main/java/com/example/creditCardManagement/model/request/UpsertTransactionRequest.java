@@ -3,10 +3,12 @@ package com.example.creditCardManagement.model.request;
 import com.example.creditCardManagement.validation.CreditCardRequestValid;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @CreditCardRequestValid
@@ -20,4 +22,5 @@ public class UpsertTransactionRequest {
 
     @Schema(description = "Сумма транзакции", example = "200.0")
     private Double amount;
+
 }

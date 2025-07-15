@@ -4,11 +4,13 @@ import com.example.creditCardManagement.model.entity.LimitDuration;
 import com.example.creditCardManagement.validation.CreditCardRequestValid;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Setter
+@Getter
 @Schema(description = "Запрос для установки лимита на карту")
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @CreditCardRequestValid
@@ -18,4 +20,5 @@ public class UpsertLimitRequest {
 
     @Schema(description = "Сумма лимита", example = "500.0")
     private Double limit;
+
 }

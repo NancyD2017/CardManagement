@@ -1,9 +1,7 @@
 package com.example.creditCardManagement.model.entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.Instant;
 
@@ -12,6 +10,8 @@ import java.time.Instant;
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class RefreshToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,11 +25,4 @@ public class RefreshToken {
 
     @Column(name = "expiry_date", nullable = false)
     private Instant expiryDate;
-
-    public RefreshToken(Long id, Long cardHolderId, String token, Instant expiryDate) {
-        this.id = id;
-        this.cardHolderId = cardHolderId;
-        this.token = token;
-        this.expiryDate = expiryDate;
-    }
 }

@@ -2,9 +2,7 @@ package com.example.creditCardManagement.model.request;
 
 import com.example.creditCardManagement.validation.CreditCardFilterValid;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
 
-@Data
 @CreditCardFilterValid
 @Schema(description = "Запрос для фильтрации кредитных карт")
 public class CreditCardFilterRequest {
@@ -19,4 +17,36 @@ public class CreditCardFilterRequest {
 
     @Schema(description = "История транзакций", example = "2025-04-26T00:00:00 : Added limit 25000.0 per month")
     private String transactionHistory;
+
+    public Long getCardHolderId() {
+        return cardHolderId;
+    }
+
+    public void setCardHolderId(Long cardHolderId) {
+        this.cardHolderId = cardHolderId;
+    }
+
+    public Integer getPageNumber() {
+        return pageNumber;
+    }
+
+    public void setPageNumber(Integer pageNumber) {
+        this.pageNumber = pageNumber;
+    }
+
+    public Integer getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(Integer pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    public String getTransactionHistory() {
+        return transactionHistory;
+    }
+
+    public void setTransactionHistory(String transactionHistory) {
+        this.transactionHistory = transactionHistory;
+    }
 }
