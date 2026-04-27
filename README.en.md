@@ -4,19 +4,6 @@ A secure **REST API** for managing credit cards with JWT-based authentication, r
 
 ---
 
-## Screenshots
-
-<!-- Screenshot: Swagger UI page at http://localhost:8080/swagger-ui.html showing all available endpoints (Auth, Card, User controllers) -->
-![Swagger UI](docs/swagger-ui.png)
-
-<!-- Screenshot: Example of a successful JWT token response from POST /api/auth/login — show the JSON body with "token" field -->
-![JWT Auth Response](docs/auth-response.png)
-
-<!-- Screenshot: Card list response from GET /api/cards — show paginated JSON response with card objects (masked card numbers) -->
-![Card List](docs/card-list.png)
-
----
-
 ## Features
 
 - **JWT Authentication** — secure login and token-based session management
